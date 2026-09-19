@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
     otpExpiry: { type: Date },
     isOtpVerified: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // hash password
@@ -62,15 +62,10 @@ userSchema.methods.generateJsonWebToken = function () {
     process.env.JWT_SECRET_KEY,
     {
       expiresIn: process.env.JWT_EXPIRES || "7d",
-    }
+    },
   );
 };
 
 const UserAuth = mongoose.model("UserAuth", userSchema);
 
 export default UserAuth;
-
-
-
-
-
