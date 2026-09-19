@@ -7,6 +7,7 @@ import {
   deleteCourse,
   EntrolledStudents,
   getCourseById,
+  createLesson,
 } from "../controllers/courseController.js";
 
 import { authorizedRole, isAuthenticated } from "../middleware/isAuth.js";
@@ -14,6 +15,13 @@ import { authorizedRole, isAuthenticated } from "../middleware/isAuth.js";
 const router = express.Router();
 
 router.get("/getCourse", isAuthenticated, GetCourse);
+
+router.post(
+  "/:courseId/lessons",
+  isAuthenticated,
+  authorizedRole("Instructor"),
+  createLesson,
+);
 
 router.post(
   "/createCourse",
