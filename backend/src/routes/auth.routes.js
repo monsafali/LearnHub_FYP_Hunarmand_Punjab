@@ -1,7 +1,7 @@
 // routes/authRoutes.js
 import express from "express";
 
-import { isAuthenticated } from "../middleware/isAuth.js";
+import { authorizedRole, isAuthenticated } from "../middleware/isAuth.js";
 import {
   loginUser,
   logoutUser,
@@ -12,11 +12,17 @@ import {
   SignupUser,
   forgotPassword,
   resetPassword,
-  updateProfile
+  updateProfile,
+  CreateInstructor,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
+// Admin only
+router.post("/create-instructor",isAuthenticated,authorizedRole("Admin"),CreateInstructor,
+);
+
+// student Signup
 router.post("/signup", SignupUser);
 router.post("/login", loginUser);
 router.post("/logout", isAuthenticated, logoutUser);
@@ -26,6 +32,6 @@ router.put("/reset/:username", forceResetStudentSesssion);
 router.put("/updatePassword", isAuthenticated, updatePassword);
 router.put("/updateProfile", isAuthenticated, updateProfile);
 router.post("/forgotPassword", forgotPassword);
-router.put("/resetPassword", resetPassword)
+router.put("/resetPassword", resetPassword);
 
 export default router;

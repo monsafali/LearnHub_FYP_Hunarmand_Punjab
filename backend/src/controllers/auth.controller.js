@@ -11,6 +11,74 @@ import { deleteFromCloudinary, isFileTypeSupported, uploadToCloudinary } from ".
 
 
 
+export const CreateInstructor = catchAsyncErrors(
+  async (req, res, next) => {
+    const {
+      fullname,
+      username,
+      email,
+      password,
+      confirmPassword,
+    } = req.body;
+
+    if (
+      !fullname ||
+      !username ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
+      return next(
+        new ErrorHandler("All fields are required", 400)
+      );
+    }
+
+    if (password !== confirmPassword) {
+      return next(
+        new ErrorHandler("Passwords do not match", 400)
+      );
+    }
+
+    const userExists = await UserAuth.findOne({
+      $or: [{ username }, { email }],
+    });
+
+    if (userExists) {
+      return next(
+        new ErrorHandler(
+          "Username or email already exists",
+          400
+        )
+      );
+    }
+
+    const instructor = await UserAuth.create({
+      fullname,
+      username,
+      email,
+      password,
+      role: "Instructor",
+      isActive : true,
+
+      // Optional: keep track of which admin created them
+      createdBy: req.user._id,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Instructor created successfully",
+      instructor: {
+        id: instructor._id,
+        fullname: instructor.fullname,
+        username: instructor.username,
+        email: instructor.email,
+        role: instructor.role,
+      },
+    });
+  }
+);
+
+
 export const SignupUser = catchAsyncErrors(async (req, res, next) => {
   const { fullname, username, email, password,
     confirmPassword, role } = req.body;

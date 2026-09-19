@@ -15,6 +15,7 @@ const __dirname = path.resolve();
 
 
 import AuthRoutes from "./routes/auth.routes.js";
+import CoursesRoutes from "./routes/course.routes.js";
 
 
 
@@ -29,6 +30,7 @@ import { errorMiddleware } from "./middleware/errorMiddleware.js";
 
 
 import { seedSuperAdmin } from "./utils/seed.js";
+
 
 
 
@@ -50,6 +52,7 @@ app.use(cookieParser());
 
 
 app.use("/api/auth", AuthRoutes);
+app.use("/api/course", CoursesRoutes)
 
 
 

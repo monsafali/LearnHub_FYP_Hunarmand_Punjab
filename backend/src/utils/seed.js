@@ -17,6 +17,7 @@ export const seedSuperAdmin = async () => {
       role: "Admin",
       image: "",
       sessionVersion: 0,
+      isActive: true,
       singleDeviceEnforced: false,
     });
 
