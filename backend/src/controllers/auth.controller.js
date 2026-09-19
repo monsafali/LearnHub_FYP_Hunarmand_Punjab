@@ -6,8 +6,50 @@ import { setTokenCookieAndSend } from "../utils/jwtToken.js";
 
 
 import { sendEmail } from "../utils/sendEmail.js";
-import { LOGIN_OTP_EMAIL_TEMPLATE } from "../utils/Email_Templates.js";
+import { FORGOT_PASSWORD_OTP_EMAIL_TEMPLATE, LOGIN_OTP_EMAIL_TEMPLATE } from "../utils/Email_Templates.js";
+import { deleteFromCloudinary, isFileTypeSupported, uploadToCloudinary } from "../utils/cloudinaryConfig.js";
 
+
+
+export const SignupUser = catchAsyncErrors(async (req, res, next) => {
+  const { fullname, username, email, password,
+    confirmPassword, role } = req.body;
+
+  if(!fullname || !username || !email || !password || !confirmPassword || !role)
+    return next(new ErrorHandler("All fields are required", 400));
+
+  if (password !== confirmPassword)
+    return next(new ErrorHandler("Passwords do not match", 400));
+
+
+  // if already exist user
+  const userExists = await UserAuth.findOne({ username });
+  if (userExists) return next(new ErrorHandler("User already exists", 400));
+
+  const user = await UserAuth.create({
+    fullname,
+    username,
+    email,
+    password,
+    role,
+  });
+
+  const otp = Math.floor(Math.random() * 1000000).toString();
+  user.otpCode = otp;
+  await user.save();
+
+
+    await sendEmail({
+    to: user.email,
+    subject: "🔐 Your Signup OTP",
+    html: LOGIN_OTP_EMAIL_TEMPLATE.replace("{otp}", otp),
+  });
+
+  setTokenCookieAndSend(res, user, 201, "Please verify your emai");
+
+
+
+})
 
 
 export const loginUser = catchAsyncErrors(async (req, res, next) => {
@@ -41,7 +83,7 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
   }
 
 
-  
+
   // Compare password
   const isMatch = await user.comparePassword(password);
   if (!isMatch) return next(new ErrorHandler("Invalid credentials", 401));
@@ -97,13 +139,13 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
 
 
 
-export const forceResetVendorSession = catchAsyncErrors(
+export const forceResetStudentSesssion = catchAsyncErrors(
   async (req, res, next) => {
     const { username } = req.params;
     const user = await UserAuth.findOne({ username });
     if (!user) return next(new ErrorHandler("User not found", 404));
-    if (user.role !== "vendor")
-      return next(new ErrorHandler("Only vendor sessions can be reset", 403));
+    if (user.role !== "student")
+      return next(new ErrorHandler("Only Student sessions can be reset", 403));
 
     user.sessionVersion = 0;
     await user.save();
@@ -116,6 +158,8 @@ export const forceResetVendorSession = catchAsyncErrors(
       });
   }
 );
+
+
 
 export const updatePassword = catchAsyncErrors(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
@@ -160,8 +204,6 @@ export const GetMe = catchAsyncErrors(async (req, res, next) => {
 
 
 
-
-
 export const verifyLoginOtp = async (req, res, next) => {
   const { username, otp } = req.body;
 
@@ -183,4 +225,180 @@ export const verifyLoginOtp = async (req, res, next) => {
   const token = user.generateJsonWebToken();
   setTokenCookieAndSend(res, user, 200, "Logged in successfully");
 };
+
+
+
+export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return next(new ErrorHandler("Email is required", 400));
+  }
+
+  const user = await UserAuth.findOne({ email });
+
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  // Generate 6 digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Save OTP
+  user.otpCode = otp;
+
+  // OTP expires after 5 minutes
+  user.otpExpiry = Date.now() + 5 * 60 * 1000;
+
+  await user.save();
+
+  // Send email
+  await sendEmail({
+    to: user.email,
+    subject: "🔐 Your Password Reset OTP",
+    html: FORGOT_PASSWORD_OTP_EMAIL_TEMPLATE.replace(
+      "{otp}",
+      otp
+    ),
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset OTP sent to your email",
+  });
+});
+
+
+
+
+export const resetPassword = catchAsyncErrors(async (req, res, next) => {
+  const {
+    email,
+    otp,
+    newPassword,
+    confirmPassword,
+  } = req.body;
+
+  if (!email || !otp || !newPassword || !confirmPassword) {
+    return next(
+      new ErrorHandler("All fields are required", 400)
+    );
+  }
+
+  if (newPassword !== confirmPassword) {
+    return next(
+      new ErrorHandler("Passwords do not match", 400)
+    );
+  }
+
+  const user = await UserAuth.findOne({ email });
+
+  if (!user) {
+    return next(
+      new ErrorHandler("User not found", 404)
+    );
+  }
+
+  // Check OTP
+  if (user.otpCode !== otp) {
+    return next(
+      new ErrorHandler("Invalid OTP", 400)
+    );
+  }
+
+  // Check OTP expiry
+  if (
+    !user.otpExpiry ||
+    user.otpExpiry < Date.now()
+  ) {
+    return next(
+      new ErrorHandler("OTP expired", 400)
+    );
+  }
+
+  // Update password
+  user.password = newPassword;
+  user.isActive = true;
+
+  // Clear reset OTP
+  user.otpCode = null;
+  user.otpExpiry = null;
+
+
+
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset successful. Please login again.",
+  });
+});
+
+
+
+export const updateProfile = catchAsyncErrors(async (req, res, next) => {
+  const user = await UserAuth.findById(req.user._id);
+
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  const {
+    cnic,
+    district,
+    districtId,
+    tehsil,
+    address,
+    contactno,
+    bio,
+  } = req.body;
+
+  const file = req.files?.imageFile;
+
+  if (!file) {
+    return next(new ErrorHandler("Image is required", 400));
+  }
+
+  if (!isFileTypeSupported(file.name)) {
+    return next(
+      new ErrorHandler("File type not supported", 400)
+    );
+  }
+
+  // Upload new image first
+  const upload = await uploadToCloudinary(
+    file,
+    "Learn_HUB"
+  );
+
+  // Delete old image if user already has one
+  if (user.imagePublicId) {
+    await deleteFromCloudinary(user.imagePublicId);
+  }
+
+  // Save new image
+  user.image = upload.secure_url;
+  user.imagePublicId = upload.public_id;
+
+  // Update profile fields
+  user.cnic = cnic;
+  user.district = district;
+  user.districtId = districtId;
+  user.tehsil = tehsil;
+  user.address = address;
+  user.contactno = contactno;
+  user.bio = bio;
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+    user,
+  });
+});
+
+
+
 

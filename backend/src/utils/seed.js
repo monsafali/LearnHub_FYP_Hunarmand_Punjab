@@ -2,7 +2,7 @@ import UserAuth from "../models/UserAuth.model.js";
 
 export const seedSuperAdmin = async () => {
   try {
-    const exists = await UserAuth.findOne({ role: "super-admin" });
+    const exists = await UserAuth.findOne({ role: "Admin" });
 
     if (exists) {
       console.log("Super Admin already exists.");
@@ -14,15 +14,15 @@ export const seedSuperAdmin = async () => {
       username: process.env.SUPER_ADMIN_USERNAME,
       email: process.env.SUPER_ADMIN_EMAIL,
       password: process.env.SUPER_ADMIN_PASSWORD,
-      role: "super-admin",
+      role: "Admin",
       image: "",
       sessionVersion: 0,
       singleDeviceEnforced: false,
     });
 
-    console.log("Super Admin created successfully.");
+    console.log(" Admin created successfully.");
   } catch (error) {
-    console.error("Super-admin seeding failed:", error);
+    console.error("Admin seeding failed:", error);
   }
 };
 

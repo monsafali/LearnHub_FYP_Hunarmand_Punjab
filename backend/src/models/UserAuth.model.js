@@ -15,18 +15,19 @@ const userSchema = new mongoose.Schema(
       validate: [validator.isEmail, "Invalid email"],
     },
     cnic: { type: String }, // optional for ADCAdmin; vendors/admins may have it
-    licenceNo: { type: String },
     district: { type: String },
     districtId: { type: String },
     tehsil: { type: String },
     address: { type: String },
     contactno: { type: String },
+    bio: { type: String },
     role: {
       type: String,
-      enum: ["super-admin", "ADCAdmin", "vendor", "bank"],
+      enum: ["Admin", "Instructor", "Student"],
+      default: "Student",
       required: true,
     },
-    isActive: { type: Boolean, default: true },
+    isActive: { type: Boolean, default: false },
     deactivated: { type: Boolean, default: false },
 
     // session control
@@ -35,7 +36,7 @@ const userSchema = new mongoose.Schema(
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "UserAuth" },
     // image stored on Cloudinary
     imageUrl: { type: String },
-    public_id: { type: String },
+    imagePublicId: { type: String },
     //otp verification
     otpCode: { type: String },
     otpExpiry: { type: Date },
@@ -68,3 +69,8 @@ userSchema.methods.generateJsonWebToken = function () {
 const UserAuth = mongoose.model("UserAuth", userSchema);
 
 export default UserAuth;
+
+
+
+
+

@@ -16,6 +16,7 @@ export const isAuthenticated = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
     }
 
+
     if (!token) return next(new ErrorHandler("Not logged in", 401));
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -42,6 +43,9 @@ export const isAuthenticated = async (req, res, next) => {
     return next(new ErrorHandler("Invalid or expired token", 401));
   }
 };
+
+
+
 
 export const authorizedRole =
   (...roles) =>

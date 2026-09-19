@@ -13,7 +13,7 @@ export const sendEmail = async ({ to, subject, html }) => {
     await api.sendTransacEmail({
       sender: {
         email: process.env.SENDER_EMAIL || "no-replEstamp.com",
-        name: "E-Stamp System",
+        name: "E-LearnHub Team",
       },
       to: [{ email: to }],
       subject,

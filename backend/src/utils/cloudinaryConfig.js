@@ -23,6 +23,8 @@ export function isFileTypeSupported(
   return supportedTypes.includes(ext);
 }
 
+
+
 export async function uploadToCloudinary(file, folder, quality = null) {
   const options = {
     folder,
