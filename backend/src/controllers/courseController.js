@@ -1,5 +1,6 @@
 import Course from "../models/Courses.model.js";
 import EnrollmentCourse from "../models/EnrollmentCourse.model.js";
+import UserAuth from "../models/UserAuth.model.js";
 import Lesson from "../models/Lesson.model.js";
 
 import { ErrorHandler } from "../middleware/errorMiddleware.js";
@@ -392,3 +393,5 @@ export const EntrolledStudents = catchAsyncErrors(async (req, res, next) => {
     students: enrollments,
   });
 });
+
+

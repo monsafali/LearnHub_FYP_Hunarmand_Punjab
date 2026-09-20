@@ -51,6 +51,9 @@ router.get(
   EntrolledStudents,
 );
 
+
+
+
 router.get("/getCourseById/:id", isAuthenticated, getCourseById);
 
 export default router;

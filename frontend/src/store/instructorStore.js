@@ -3,10 +3,12 @@ import { API_BASE_URL } from "../utils/api";
 
 
 
+
+
 const useInstructorStore = create((set) => ({
   courses: [],
   students: [],
-  lessons: [],
+  analytics: null,
 
   loading: false,
   error: null,
@@ -22,26 +24,25 @@ const useInstructorStore = create((set) => ({
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.get(
-          "/course/getCourse"
-        );
+      const response = await API_BASE_URL.get(
+        "/course/getCourse",
+      );
+
+      const courses = response.data?.courses || [];
 
       set({
-        courses:
-          response.data.courses || [],
+        courses,
         loading: false,
       });
 
       return {
         success: true,
-        courses:
-          response.data.courses || [],
+        courses,
       };
     } catch (error) {
       const message =
         error.response?.data?.message ||
-        "Failed to fetch courses";
+        "Failed to load courses";
 
       set({
         loading: false,
@@ -55,6 +56,46 @@ const useInstructorStore = create((set) => ({
     }
   },
 
+  // =====================================================
+  // GET ANALYTICS
+  // =====================================================
+
+  getAnalytics: async () => {
+    try {
+      set({
+        loading: true,
+        error: null,
+      });
+
+      const response = await API_BASE_URL.get(
+        "/course/analytics",
+      );
+
+      set({
+        analytics: response.data?.analytics || null,
+        loading: false,
+      });
+
+      return {
+        success: true,
+        analytics: response.data?.analytics,
+      };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Failed to load analytics";
+
+      set({
+        loading: false,
+        error: message,
+      });
+
+      return {
+        success: false,
+        message,
+      };
+    }
+  },
 
   // =====================================================
   // CREATE COURSE
@@ -67,28 +108,25 @@ const useInstructorStore = create((set) => ({
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.post(
-          "/course/createCourse",
-          formData
-        );
+      const response = await API_BASE_URL.post(
+        "/course/createCourse",
+        formData,
+      );
 
       set((state) => ({
         courses: [
           response.data.course,
           ...state.courses,
         ],
-
         loading: false,
       }));
 
       return {
         success: true,
-        course:
-          response.data.course,
-
+        course: response.data.course,
         message:
-          response.data.message,
+          response.data?.message ||
+          "Course created successfully",
       };
     } catch (error) {
       const message =
@@ -107,47 +145,38 @@ const useInstructorStore = create((set) => ({
     }
   },
 
-
   // =====================================================
   // UPDATE COURSE
   // =====================================================
 
-  updateCourse: async (
-    id,
-    data
-  ) => {
+  updateCourse: async (id, data) => {
     try {
       set({
         loading: true,
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.put(
-          `/course/updateCourse/${id}`,
-          data
-        );
+      const response = await API_BASE_URL.put(
+        `/course/updateCourse/${id}`,
+        data,
+      );
 
       set((state) => ({
-        courses:
-          state.courses.map(
-            (course) =>
-              course._id === id
-                ? response.data.course
-                : course
-          ),
+        courses: state.courses.map((course) =>
+          course._id === id
+            ? response.data.course
+            : course,
+        ),
 
         loading: false,
       }));
 
       return {
         success: true,
-
-        course:
-          response.data.course,
-
+        course: response.data.course,
         message:
-          response.data.message,
+          response.data?.message ||
+          "Course updated successfully",
       };
     } catch (error) {
       const message =
@@ -166,7 +195,6 @@ const useInstructorStore = create((set) => ({
     }
   },
 
-
   // =====================================================
   // DELETE COURSE
   // =====================================================
@@ -178,26 +206,22 @@ const useInstructorStore = create((set) => ({
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.delete(
-          `/course/deleteCourse/${id}`
-        );
+      const response = await API_BASE_URL.delete(
+        `/course/deleteCourse/${id}`,
+      );
 
       set((state) => ({
-        courses:
-          state.courses.filter(
-            (course) =>
-              course._id !== id
-          ),
-
+        courses: state.courses.filter(
+          (course) => course._id !== id,
+        ),
         loading: false,
       }));
 
       return {
         success: true,
-
         message:
-          response.data.message,
+          response.data?.message ||
+          "Course deleted successfully",
       };
     } catch (error) {
       const message =
@@ -216,44 +240,32 @@ const useInstructorStore = create((set) => ({
     }
   },
 
-
   // =====================================================
   // CREATE LESSON
   // =====================================================
 
-  createLesson: async (
-    courseId,
-    formData
-  ) => {
+  createLesson: async (courseId, formData) => {
     try {
       set({
         loading: true,
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.post(
-          `/course/${courseId}/lessons`,
-          formData
-        );
+      const response = await API_BASE_URL.post(
+        `/course/${courseId}/lessons`,
+        formData,
+      );
 
-      set((state) => ({
-        lessons: [
-          response.data.lesson,
-          ...state.lessons,
-        ],
-
+      set({
         loading: false,
-      }));
+      });
 
       return {
         success: true,
-
-        lesson:
-          response.data.lesson,
-
+        lesson: response.data.lesson,
         message:
-          response.data.message,
+          response.data?.message ||
+          "Lesson created successfully",
       };
     } catch (error) {
       const message =
@@ -272,120 +284,11 @@ const useInstructorStore = create((set) => ({
     }
   },
 
-
-  // =====================================================
-  // GET LESSONS
-  // =====================================================
-
-  getCourseLessons: async (
-    courseId
-  ) => {
-    try {
-      set({
-        loading: true,
-        error: null,
-      });
-
-      const response =
-        await API_BASE_URL.get(
-          `/course/${courseId}/lessons`
-        );
-
-      set({
-        lessons:
-          response.data.lessons || [],
-
-        loading: false,
-      });
-
-      return {
-        success: true,
-
-        lessons:
-          response.data.lessons || [],
-      };
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        "Failed to fetch lessons";
-
-      set({
-        loading: false,
-        error: message,
-      });
-
-      return {
-        success: false,
-        message,
-      };
-    }
-  },
-
-
-  // =====================================================
-  // PUBLISH LESSON
-  // =====================================================
-
-  toggleLessonPublish: async (
-    lessonId
-  ) => {
-    try {
-      set({
-        loading: true,
-        error: null,
-      });
-
-      const response =
-        await API_BASE_URL.patch(
-          `/course/lessons/${lessonId}/publish`
-        );
-
-      set((state) => ({
-        lessons:
-          state.lessons.map(
-            (lesson) =>
-              lesson._id === lessonId
-                ? response.data.lesson
-                : lesson
-          ),
-
-        loading: false,
-      }));
-
-      return {
-        success: true,
-
-        lesson:
-          response.data.lesson,
-
-        message:
-          response.data.message,
-      };
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        "Failed to update lesson";
-
-      set({
-        loading: false,
-        error: message,
-      });
-
-      return {
-        success: false,
-        message,
-      };
-    }
-  },
-
-
   // =====================================================
   // GET ENROLLED STUDENTS
   // =====================================================
 
-  getEnrolledStudents: async (
-    courseId
-  ) => {
+  getEnrolledStudents: async (courseId) => {
     try {
       set({
         loading: true,
@@ -394,26 +297,27 @@ const useInstructorStore = create((set) => ({
 
       const response =
         await API_BASE_URL.get(
-          `/course/EntrolledStudents?courseId=${courseId}`
+          `/course/EntrolledStudents?courseId=${courseId}`,
         );
 
-      set({
-        students:
-          response.data.students || [],
+      const students =
+        response.data?.students ||
+        response.data?.enrollments ||
+        [];
 
+      set({
+        students,
         loading: false,
       });
 
       return {
         success: true,
-
-        students:
-          response.data.students || [],
+        students,
       };
     } catch (error) {
       const message =
         error.response?.data?.message ||
-        "Failed to fetch enrolled students";
+        "Failed to load students";
 
       set({
         loading: false,
