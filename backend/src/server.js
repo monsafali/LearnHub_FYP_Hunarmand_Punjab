@@ -17,7 +17,7 @@ const __dirname = path.resolve();
 import AuthRoutes from "./routes/auth.routes.js";
 import InstructorRoutes from "./routes/instructor.routes.js";
 import CoursesRoutes from "./routes/student.routes.js";
-
+import adminRoutes from "./routes/admin.routes.js";
 
 
 
@@ -59,8 +59,10 @@ app.use(cookieParser());
 
 
 app.use("/api/auth", AuthRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/course", InstructorRoutes)
 app.use("/api/student", CoursesRoutes)
+
 
 
 
