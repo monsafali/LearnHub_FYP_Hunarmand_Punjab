@@ -1,14 +1,32 @@
 import { useEffect, useState } from "react";
+
 import {
+  BarChart3,
   BookOpen,
   GraduationCap,
   LayoutDashboard,
   Menu,
+  PieChart as PieChartIcon,
   ShieldCheck,
   UserPlus,
   Users,
   X,
 } from "lucide-react";
+
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+
 import toast from "react-hot-toast";
 
 import useAuthStore from "../../store/authStore";
@@ -32,21 +50,15 @@ const AdminDashboard = () => {
     toggleInstructorStatus,
   } = useAdminStore();
 
-  const [activeTab, setActiveTab] = useState(
-    "dashboard"
-  );
+  const [activeTab, setActiveTab] = useState("dashboard");
 
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [showCreateModal, setShowCreateModal] =
-    useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const [showEditModal, setShowEditModal] =
-    useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
-  const [selectedInstructor, setSelectedInstructor] =
-    useState(null);
+  const [selectedInstructor, setSelectedInstructor] = useState(null);
 
   const [search, setSearch] = useState("");
 
@@ -71,7 +83,6 @@ const AdminDashboard = () => {
     bio: "",
   });
 
-
   // =====================================================
   // INITIAL DATA
   // =====================================================
@@ -82,7 +93,6 @@ const AdminDashboard = () => {
     getUsers();
   }, []);
 
-
   // =====================================================
   // CREATE INSTRUCTOR
   // =====================================================
@@ -90,15 +100,12 @@ const AdminDashboard = () => {
   const handleCreateInstructor = async (e) => {
     e.preventDefault();
 
-    if (
-      form.password !== form.confirmPassword
-    ) {
+    if (form.password !== form.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
 
-    const result =
-      await createInstructor(form);
+    const result = await createInstructor(form);
 
     if (!result.success) {
       toast.error(result.message);
@@ -119,7 +126,6 @@ const AdminDashboard = () => {
 
     getAnalytics();
   };
-
 
   // =====================================================
   // OPEN EDIT MODAL
@@ -144,7 +150,6 @@ const AdminDashboard = () => {
     setShowEditModal(true);
   };
 
-
   // =====================================================
   // UPDATE INSTRUCTOR
   // =====================================================
@@ -152,11 +157,7 @@ const AdminDashboard = () => {
   const handleUpdateInstructor = async (e) => {
     e.preventDefault();
 
-    const result =
-      await updateInstructor(
-        selectedInstructor._id,
-        editForm
-      );
+    const result = await updateInstructor(selectedInstructor._id, editForm);
 
     if (!result.success) {
       toast.error(result.message);
@@ -169,14 +170,12 @@ const AdminDashboard = () => {
     setSelectedInstructor(null);
   };
 
-
   // =====================================================
   // ACTIVATE / DEACTIVATE
   // =====================================================
 
   const handleToggleStatus = async (id) => {
-    const result =
-      await toggleInstructorStatus(id);
+    const result = await toggleInstructorStatus(id);
 
     if (!result.success) {
       toast.error(result.message);
@@ -186,7 +185,6 @@ const AdminDashboard = () => {
     toast.success(result.message);
   };
 
-
   // =====================================================
   // FILTER USERS
   // =====================================================
@@ -195,74 +193,91 @@ const AdminDashboard = () => {
     const value = search.toLowerCase();
 
     return (
-      item.fullname
-        ?.toLowerCase()
-        .includes(value) ||
-      item.username
-        ?.toLowerCase()
-        .includes(value) ||
-      item.email
-        ?.toLowerCase()
-        .includes(value) ||
-      item.role
-        ?.toLowerCase()
-        .includes(value)
+      item.fullname?.toLowerCase().includes(value) ||
+      item.username?.toLowerCase().includes(value) ||
+      item.email?.toLowerCase().includes(value) ||
+      item.role?.toLowerCase().includes(value)
     );
   });
 
+  const roleChartData = [
+    {
+      name: "Students",
+      value: analytics?.totalStudents || 0,
+    },
+    {
+      name: "Instructors",
+      value: analytics?.totalInstructors || 0,
+    },
+    {
+      name: "Admins",
+      value: analytics?.totalAdmins || 0,
+    },
+  ];
 
+  const platformChartData = [
+    {
+      name: "Users",
+      value: analytics?.totalUsers || 0,
+    },
+    {
+      name: "Students",
+      value: analytics?.totalStudents || 0,
+    },
+    {
+      name: "Instructors",
+      value: analytics?.totalInstructors || 0,
+    },
+    {
+      name: "Courses",
+      value: analytics?.totalCourses || 0,
+    },
+    {
+      name: "Enrollments",
+      value: analytics?.totalEnrollments || 0,
+    },
+  ];
+
+  const statusChartData = [
+    {
+      name: "Active",
+      value: analytics?.activeUsers || 0,
+    },
+    {
+      name: "Inactive",
+      value: analytics?.inactiveUsers || 0,
+    },
+  ];
   return (
     <div className="min-h-screen bg-gray-100">
-
-
       {/* Mobile Header */}
       <div className="flex items-center justify-between border-b bg-white px-4 py-4 lg:hidden">
-        <h1 className="text-xl font-bold text-blue-600">
-          Admin Panel
-        </h1>
+        <h1 className="text-xl font-bold text-blue-600">Admin Panel</h1>
 
         <button
-          onClick={() =>
-            setSidebarOpen(true)
-          }
+          onClick={() => setSidebarOpen(true)}
           className="rounded-lg p-2 hover:bg-gray-100"
         >
           <Menu />
         </button>
       </div>
 
-
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-gray-900 text-white transition-transform lg:translate-x-0 ${
-          sidebarOpen
-            ? "translate-x-0"
-            : "-translate-x-full"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-
         <div className="flex h-16 items-center justify-between border-b border-gray-700 px-5">
-          <h1 className="text-xl font-bold">
-            LearnHub Admin
-          </h1>
+          <h1 className="text-xl font-bold">LearnHub Admin</h1>
 
-          <button
-            onClick={() =>
-              setSidebarOpen(false)
-            }
-            className="lg:hidden"
-          >
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
             <X />
           </button>
         </div>
 
-
         <div className="p-4">
-
-          <p className="mb-6 text-xs uppercase text-gray-400">
-            Administration
-          </p>
-
+          <p className="mb-6 text-xs uppercase text-gray-400">Administration</p>
 
           <SidebarButton
             icon={<LayoutDashboard size={19} />}
@@ -274,7 +289,6 @@ const AdminDashboard = () => {
             }}
           />
 
-
           <SidebarButton
             icon={<UserPlus size={19} />}
             text="Instructors"
@@ -285,7 +299,6 @@ const AdminDashboard = () => {
             }}
           />
 
-
           <SidebarButton
             icon={<Users size={19} />}
             text="Users"
@@ -295,28 +308,20 @@ const AdminDashboard = () => {
               setSidebarOpen(false);
             }}
           />
-
         </div>
       </aside>
 
-
       {/* Main */}
       <main className="lg:ml-64">
-
-
         {/* Desktop Header */}
         <header className="hidden items-center justify-between border-b bg-white px-8 py-5 lg:flex">
-
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {activeTab === "dashboard" &&
-                "Dashboard"}
+              {activeTab === "dashboard" && "Dashboard"}
 
-              {activeTab === "instructors" &&
-                "Manage Instructors"}
+              {activeTab === "instructors" && "Manage Instructors"}
 
-              {activeTab === "users" &&
-                "Users"}
+              {activeTab === "users" && "Users"}
             </h1>
 
             <p className="mt-1 text-sm text-gray-500">
@@ -325,7 +330,6 @@ const AdminDashboard = () => {
           </div>
 
           <div className="flex items-center gap-3">
-
             {user?.imageUrl ? (
               <img
                 src={user.imageUrl}
@@ -334,132 +338,309 @@ const AdminDashboard = () => {
               />
             ) : (
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-semibold text-white">
-                {user?.fullname
-                  ?.charAt(0)
-                  ?.toUpperCase()}
+                {user?.fullname?.charAt(0)?.toUpperCase()}
               </div>
             )}
 
             <div>
-              <p className="text-sm font-semibold">
-                {user?.fullname}
-              </p>
+              <p className="text-sm font-semibold">{user?.fullname}</p>
 
-              <p className="text-xs text-gray-500">
-                Administrator
-              </p>
+              <p className="text-xs text-gray-500">Administrator</p>
             </div>
-
           </div>
         </header>
 
-
         <div className="p-4 md:p-8">
-
-
           {/* ================================================= */}
           {/* DASHBOARD */}
           {/* ================================================= */}
 
           {activeTab === "dashboard" && (
             <>
-
               <div className="mb-8">
-                <h2 className="text-2xl font-bold">
-                  Overview
-                </h2>
+                <h2 className="text-2xl font-bold">Overview</h2>
 
                 <p className="mt-1 text-gray-500">
                   Platform statistics and analytics
                 </p>
               </div>
 
-
               {/* Statistics */}
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-
                 <StatCard
                   title="Total Users"
-                  value={
-                    analytics?.totalUsers || 0
-                  }
+                  value={analytics?.totalUsers || 0}
                   icon={<Users />}
                 />
 
                 <StatCard
                   title="Students"
-                  value={
-                    analytics?.totalStudents || 0
-                  }
+                  value={analytics?.totalStudents || 0}
                   icon={<GraduationCap />}
                 />
 
                 <StatCard
                   title="Instructors"
-                  value={
-                    analytics?.totalInstructors || 0
-                  }
+                  value={analytics?.totalInstructors || 0}
                   icon={<ShieldCheck />}
                 />
 
                 <StatCard
                   title="Courses"
-                  value={
-                    analytics?.totalCourses || 0
-                  }
+                  value={analytics?.totalCourses || 0}
                   icon={<BookOpen />}
                 />
-
               </div>
 
+              {/* ================================================= */}
+              {/* CHARTS */}
+              {/* ================================================= */}
+
+              <div className="mt-8 grid gap-6 lg:grid-cols-2">
+                {/* Platform Overview */}
+                <div className="rounded-xl bg-white p-6 shadow-sm">
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                      <BarChart3 size={20} />
+                    </div>
+
+                    <div>
+                      <h2 className="font-semibold text-gray-900">
+                        Platform Overview
+                      </h2>
+
+                      <p className="text-sm text-gray-500">
+                        Overview of LMS statistics
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="h-[320px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={platformChartData}
+                        margin={{
+                          top: 10,
+                          right: 10,
+                          left: -10,
+                          bottom: 10,
+                        }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+
+                        <XAxis
+                          dataKey="name"
+                          tick={{
+                            fontSize: 12,
+                            fill: "#6b7280",
+                          }}
+                          axisLine={{ stroke: "#d1d5db" }}
+                        />
+
+                        <YAxis
+                          tick={{
+                            fontSize: 12,
+                            fill: "#6b7280",
+                          }}
+                          axisLine={{ stroke: "#d1d5db" }}
+                        />
+
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "#ffffff",
+                            border: "none",
+                            borderRadius: "10px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                          }}
+                          cursor={{
+                            fill: "rgba(59, 130, 246, 0.08)",
+                          }}
+                        />
+
+                        <Bar dataKey="value" name="Count" radius={[6, 6, 0, 0]}>
+                          {platformChartData.map((entry, index) => {
+                            const colors = [
+                              "#3b82f6",
+                              "#8b5cf6",
+                              "#10b981",
+                              "#f59e0b",
+                              "#ef4444",
+                              "#06b6d4",
+                            ];
+
+                            return (
+                              <Cell
+                                key={`platform-cell-${index}`}
+                                fill={colors[index % colors.length]}
+                              />
+                            );
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Users By Role */}
+                <div className="rounded-xl bg-white p-6 shadow-sm">
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+                      <PieChartIcon size={20} />
+                    </div>
+
+                    <div>
+                      <h2 className="font-semibold text-gray-900">
+                        Users By Role
+                      </h2>
+
+                      <p className="text-sm text-gray-500">
+                        Distribution of platform users
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="h-[320px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={roleChartData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={105}
+                          label
+                          labelLine={false}
+                        >
+                          {roleChartData.map((entry, index) => {
+                            const colors = [
+                              "#6366f1",
+                              "#ec4899",
+                              "#14b8a6",
+                              "#f59e0b",
+                              "#ef4444",
+                              "#8b5cf6",
+                            ];
+
+                            return (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={colors[index % colors.length]}
+                              />
+                            );
+                          })}
+                        </Pie>
+
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "#ffffff",
+                            border: "none",
+                            borderRadius: "10px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                          }}
+                        />
+
+                        <Legend verticalAlign="bottom" height={36} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* ================================================= */}
+              {/* USER STATUS */}
+              {/* ================================================= */}
+
+              <div className="mt-6 rounded-xl bg-white p-6 shadow-sm">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600">
+                    <Users size={20} />
+                  </div>
+
+                  <div>
+                    <h2 className="font-semibold text-gray-900">User Status</h2>
+
+                    <p className="text-sm text-gray-500">
+                      Active and inactive users
+                    </p>
+                  </div>
+                </div>
+
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={statusChartData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        label
+                        labelLine={false}
+                      >
+                        {statusChartData.map((entry, index) => {
+                          const colors = [
+                            "#22c55e", // Active
+                            "#ef4444", // Inactive
+                            "#f59e0b", // Pending
+                            "#3b82f6", // Other
+                          ];
+
+                          return (
+                            <Cell
+                              key={`status-cell-${index}`}
+                              fill={colors[index % colors.length]}
+                            />
+                          );
+                        })}
+                      </Pie>
+
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#ffffff",
+                          border: "none",
+                          borderRadius: "10px",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        }}
+                      />
+
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
 
               {/* Second row */}
               <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-
                 <StatCard
                   title="Enrollments"
-                  value={
-                    analytics?.totalEnrollments || 0
-                  }
+                  value={analytics?.totalEnrollments || 0}
                   icon={<BookOpen />}
                 />
 
                 <StatCard
                   title="Active Users"
-                  value={
-                    analytics?.activeUsers || 0
-                  }
+                  value={analytics?.activeUsers || 0}
                   icon={<Users />}
                 />
 
                 <StatCard
                   title="Inactive Users"
-                  value={
-                    analytics?.inactiveUsers || 0
-                  }
+                  value={analytics?.inactiveUsers || 0}
                   icon={<Users />}
                 />
-
               </div>
-
 
               {/* Quick Actions */}
               <div className="mt-8 rounded-xl bg-white p-6 shadow-sm">
-
-                <h2 className="text-lg font-semibold">
-                  Quick Actions
-                </h2>
+                <h2 className="text-lg font-semibold">Quick Actions</h2>
 
                 <div className="mt-5 flex flex-wrap gap-3">
-
                   <button
                     onClick={() => {
-                      setActiveTab(
-                        "instructors"
-                      );
-                      setShowCreateModal(
-                        true
-                      );
+                      setActiveTab("instructors");
+                      setShowCreateModal(true);
                     }}
                     className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700"
                   >
@@ -468,22 +649,16 @@ const AdminDashboard = () => {
                   </button>
 
                   <button
-                    onClick={() =>
-                      setActiveTab("users")
-                    }
+                    onClick={() => setActiveTab("users")}
                     className="flex items-center gap-2 rounded-lg border px-5 py-3 text-sm font-medium hover:bg-gray-50"
                   >
                     <Users size={18} />
                     View Users
                   </button>
-
                 </div>
-
               </div>
-
             </>
           )}
-
 
           {/* ================================================= */}
           {/* INSTRUCTORS */}
@@ -491,13 +666,9 @@ const AdminDashboard = () => {
 
           {activeTab === "instructors" && (
             <>
-
               <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-
                 <div>
-                  <h2 className="text-2xl font-bold">
-                    Instructors
-                  </h2>
+                  <h2 className="text-2xl font-bold">Instructors</h2>
 
                   <p className="text-sm text-gray-500">
                     Manage your platform instructors
@@ -505,163 +676,107 @@ const AdminDashboard = () => {
                 </div>
 
                 <button
-                  onClick={() =>
-                    setShowCreateModal(true)
-                  }
+                  onClick={() => setShowCreateModal(true)}
                   className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
                 >
                   <UserPlus size={18} />
                   Create Instructor
                 </button>
-
               </div>
 
-
               <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-
                 <div className="overflow-x-auto">
-
                   <table className="w-full text-left">
-
                     <thead className="border-b bg-gray-50 text-sm text-gray-600">
-
                       <tr>
-                        <th className="px-5 py-4">
-                          Instructor
-                        </th>
+                        <th className="px-5 py-4">Instructor</th>
 
-                        <th className="px-5 py-4">
-                          Email
-                        </th>
+                        <th className="px-5 py-4">Email</th>
 
-                        <th className="px-5 py-4">
-                          Status
-                        </th>
+                        <th className="px-5 py-4">Status</th>
 
-                        <th className="px-5 py-4">
-                          Actions
-                        </th>
+                        <th className="px-5 py-4">Actions</th>
                       </tr>
-
                     </thead>
 
                     <tbody>
-
-                      {instructors.map(
-                        (instructor) => (
-                          <tr
-                            key={
-                              instructor._id
-                            }
-                            className="border-b last:border-0"
-                          >
-
-                            <td className="px-5 py-4">
-
-                              <div className="flex items-center gap-3">
-
-                                {instructor.imageUrl ? (
-                                  <img
-                                    src={
-                                      instructor.imageUrl
-                                    }
-                                    className="h-10 w-10 rounded-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
-                                    {instructor.fullname
-                                      ?.charAt(
-                                        0
-                                      )
-                                      ?.toUpperCase()}
-                                  </div>
-                                )}
-
-                                <div>
-                                  <p className="font-medium">
-                                    {
-                                      instructor.fullname
-                                    }
-                                  </p>
-
-                                  <p className="text-xs text-gray-500">
-                                    @
-                                    {
-                                      instructor.username
-                                    }
-                                  </p>
+                      {instructors.map((instructor) => (
+                        <tr
+                          key={instructor._id}
+                          className="border-b last:border-0"
+                        >
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              {instructor.imageUrl ? (
+                                <img
+                                  src={instructor.imageUrl}
+                                  className="h-10 w-10 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
+                                  {instructor.fullname
+                                    ?.charAt(0)
+                                    ?.toUpperCase()}
                                 </div>
+                              )}
 
+                              <div>
+                                <p className="font-medium">
+                                  {instructor.fullname}
+                                </p>
+
+                                <p className="text-xs text-gray-500">
+                                  @{instructor.username}
+                                </p>
                               </div>
+                            </div>
+                          </td>
 
-                            </td>
+                          <td className="px-5 py-4 text-sm text-gray-600">
+                            {instructor.email}
+                          </td>
 
-                            <td className="px-5 py-4 text-sm text-gray-600">
-                              {
-                                instructor.email
-                              }
-                            </td>
+                          <td className="px-5 py-4">
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                instructor.isActive
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {instructor.isActive ? "Active" : "Inactive"}
+                            </span>
+                          </td>
 
-                            <td className="px-5 py-4">
+                          <td className="px-5 py-4">
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                onClick={() => openEditModal(instructor)}
+                                className="rounded-lg border px-3 py-2 text-xs font-medium hover:bg-gray-50"
+                              >
+                                Edit
+                              </button>
 
-                              <span
-                                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                              <button
+                                onClick={() =>
+                                  handleToggleStatus(instructor._id)
+                                }
+                                className={`rounded-lg px-3 py-2 text-xs font-medium text-white ${
                                   instructor.isActive
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-red-100 text-red-700"
+                                    ? "bg-red-500 hover:bg-red-600"
+                                    : "bg-green-600 hover:bg-green-700"
                                 }`}
                               >
                                 {instructor.isActive
-                                  ? "Active"
-                                  : "Inactive"}
-                              </span>
-
-                            </td>
-
-                            <td className="px-5 py-4">
-
-                              <div className="flex flex-wrap gap-2">
-
-                                <button
-                                  onClick={() =>
-                                    openEditModal(
-                                      instructor
-                                    )
-                                  }
-                                  className="rounded-lg border px-3 py-2 text-xs font-medium hover:bg-gray-50"
-                                >
-                                  Edit
-                                </button>
-
-                                <button
-                                  onClick={() =>
-                                    handleToggleStatus(
-                                      instructor._id
-                                    )
-                                  }
-                                  className={`rounded-lg px-3 py-2 text-xs font-medium text-white ${
-                                    instructor.isActive
-                                      ? "bg-red-500 hover:bg-red-600"
-                                      : "bg-green-600 hover:bg-green-700"
-                                  }`}
-                                >
-                                  {instructor.isActive
-                                    ? "Deactivate"
-                                    : "Activate"}
-                                </button>
-
-                              </div>
-
-                            </td>
-
-                          </tr>
-                        )
-                      )}
-
+                                  ? "Deactivate"
+                                  : "Activate"}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
-
                   </table>
-
                 </div>
 
                 {instructors.length === 0 && (
@@ -669,12 +784,9 @@ const AdminDashboard = () => {
                     No instructors found.
                   </div>
                 )}
-
               </div>
-
             </>
           )}
-
 
           {/* ================================================= */}
           {/* USERS */}
@@ -682,159 +794,98 @@ const AdminDashboard = () => {
 
           {activeTab === "users" && (
             <>
-
               <div className="mb-6">
-
-                <h2 className="text-2xl font-bold">
-                  All Users
-                </h2>
+                <h2 className="text-2xl font-bold">All Users</h2>
 
                 <p className="mt-1 text-sm text-gray-500">
                   View all registered users
                 </p>
-
               </div>
-
 
               <div className="mb-5">
                 <input
                   type="text"
                   placeholder="Search by name, username, email or role..."
                   value={search}
-                  onChange={(e) =>
-                    setSearch(e.target.value)
-                  }
+                  onChange={(e) => setSearch(e.target.value)}
                   className="w-full rounded-lg border bg-white px-4 py-3 outline-none focus:border-blue-500"
                 />
               </div>
 
-
               <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-
                 <div className="overflow-x-auto">
-
                   <table className="w-full text-left">
-
                     <thead className="border-b bg-gray-50 text-sm text-gray-600">
-
                       <tr>
-                        <th className="px-5 py-4">
-                          User
-                        </th>
+                        <th className="px-5 py-4">User</th>
 
-                        <th className="px-5 py-4">
-                          Email
-                        </th>
+                        <th className="px-5 py-4">Email</th>
 
-                        <th className="px-5 py-4">
-                          Role
-                        </th>
+                        <th className="px-5 py-4">Role</th>
 
-                        <th className="px-5 py-4">
-                          Status
-                        </th>
+                        <th className="px-5 py-4">Status</th>
                       </tr>
-
                     </thead>
 
                     <tbody>
-
-                      {filteredUsers.map(
-                        (item) => (
-                          <tr
-                            key={item._id}
-                            className="border-b last:border-0"
-                          >
-
-                            <td className="px-5 py-4">
-
-                              <div className="flex items-center gap-3">
-
-                                {item.imageUrl ? (
-                                  <img
-                                    src={
-                                      item.imageUrl
-                                    }
-                                    className="h-9 w-9 rounded-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold">
-                                    {item.fullname
-                                      ?.charAt(
-                                        0
-                                      )
-                                      ?.toUpperCase()}
-                                  </div>
-                                )}
-
-                                <div>
-                                  <p className="font-medium">
-                                    {
-                                      item.fullname
-                                    }
-                                  </p>
-
-                                  <p className="text-xs text-gray-500">
-                                    @
-                                    {
-                                      item.username
-                                    }
-                                  </p>
+                      {filteredUsers.map((item) => (
+                        <tr key={item._id} className="border-b last:border-0">
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              {item.imageUrl ? (
+                                <img
+                                  src={item.imageUrl}
+                                  className="h-9 w-9 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold">
+                                  {item.fullname?.charAt(0)?.toUpperCase()}
                                 </div>
+                              )}
 
+                              <div>
+                                <p className="font-medium">{item.fullname}</p>
+
+                                <p className="text-xs text-gray-500">
+                                  @{item.username}
+                                </p>
                               </div>
+                            </div>
+                          </td>
 
-                            </td>
+                          <td className="px-5 py-4 text-sm text-gray-600">
+                            {item.email}
+                          </td>
 
-                            <td className="px-5 py-4 text-sm text-gray-600">
-                              {item.email}
-                            </td>
+                          <td className="px-5 py-4">
+                            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+                              {item.role}
+                            </span>
+                          </td>
 
-                            <td className="px-5 py-4">
-
-                              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-                                {item.role}
-                              </span>
-
-                            </td>
-
-                            <td className="px-5 py-4">
-
-                              <span
-                                className={`rounded-full px-3 py-1 text-xs font-medium ${
-                                  item.isActive &&
-                                  !item.deactivated
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-red-100 text-red-700"
-                                }`}
-                              >
-                                {item.isActive &&
-                                !item.deactivated
-                                  ? "Active"
-                                  : "Inactive"}
-                              </span>
-
-                            </td>
-
-                          </tr>
-                        )
-                      )}
-
+                          <td className="px-5 py-4">
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                item.isActive && !item.deactivated
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {item.isActive && !item.deactivated
+                                ? "Active"
+                                : "Inactive"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
-
                   </table>
-
                 </div>
-
               </div>
-
             </>
           )}
-
         </div>
-
       </main>
-
 
       {/* ================================================= */}
       {/* CREATE INSTRUCTOR MODAL */}
@@ -843,18 +894,9 @@ const AdminDashboard = () => {
       {showCreateModal && (
         <Modal
           title="Create Instructor"
-          onClose={() =>
-            setShowCreateModal(false)
-          }
+          onClose={() => setShowCreateModal(false)}
         >
-
-          <form
-            onSubmit={
-              handleCreateInstructor
-            }
-            className="space-y-4"
-          >
-
+          <form onSubmit={handleCreateInstructor} className="space-y-4">
             <Input
               label="Full Name"
               value={form.fullname}
@@ -908,8 +950,7 @@ const AdminDashboard = () => {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  confirmPassword:
-                    e.target.value,
+                  confirmPassword: e.target.value,
                 })
               }
             />
@@ -918,16 +959,11 @@ const AdminDashboard = () => {
               disabled={loading}
               className="w-full rounded-lg bg-blue-600 py-3 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
             >
-              {loading
-                ? "Creating..."
-                : "Create Instructor"}
+              {loading ? "Creating..." : "Create Instructor"}
             </button>
-
           </form>
-
         </Modal>
       )}
-
 
       {/* ================================================= */}
       {/* EDIT INSTRUCTOR MODAL */}
@@ -936,18 +972,9 @@ const AdminDashboard = () => {
       {showEditModal && (
         <Modal
           title="Update Instructor"
-          onClose={() =>
-            setShowEditModal(false)
-          }
+          onClose={() => setShowEditModal(false)}
         >
-
-          <form
-            onSubmit={
-              handleUpdateInstructor
-            }
-            className="space-y-4"
-          >
-
+          <form onSubmit={handleUpdateInstructor} className="space-y-4">
             <Input
               label="Full Name"
               value={editForm.fullname}
@@ -983,7 +1010,6 @@ const AdminDashboard = () => {
             />
 
             <div className="grid gap-4 md:grid-cols-2">
-
               <Input
                 label="CNIC"
                 value={editForm.cnic}
@@ -997,28 +1023,22 @@ const AdminDashboard = () => {
 
               <Input
                 label="Contact"
-                value={
-                  editForm.contactno
-                }
+                value={editForm.contactno}
                 onChange={(e) =>
                   setEditForm({
                     ...editForm,
-                    contactno:
-                      e.target.value,
+                    contactno: e.target.value,
                   })
                 }
               />
 
               <Input
                 label="District"
-                value={
-                  editForm.district
-                }
+                value={editForm.district}
                 onChange={(e) =>
                   setEditForm({
                     ...editForm,
-                    district:
-                      e.target.value,
+                    district: e.target.value,
                   })
                 }
               />
@@ -1029,12 +1049,10 @@ const AdminDashboard = () => {
                 onChange={(e) =>
                   setEditForm({
                     ...editForm,
-                    tehsil:
-                      e.target.value,
+                    tehsil: e.target.value,
                   })
                 }
               />
-
             </div>
 
             <Input
@@ -1049,9 +1067,7 @@ const AdminDashboard = () => {
             />
 
             <div>
-              <label className="mb-1 block text-sm font-medium">
-                Bio
-              </label>
+              <label className="mb-1 block text-sm font-medium">Bio</label>
 
               <textarea
                 value={editForm.bio}
@@ -1070,31 +1086,20 @@ const AdminDashboard = () => {
               disabled={loading}
               className="w-full rounded-lg bg-blue-600 py-3 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
             >
-              {loading
-                ? "Updating..."
-                : "Update Instructor"}
+              {loading ? "Updating..." : "Update Instructor"}
             </button>
-
           </form>
-
         </Modal>
       )}
-
     </div>
   );
 };
-
 
 // =====================================================
 // SIDEBAR BUTTON
 // =====================================================
 
-const SidebarButton = ({
-  icon,
-  text,
-  active,
-  onClick,
-}) => {
+const SidebarButton = ({ icon, text, active, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -1110,52 +1115,33 @@ const SidebarButton = ({
   );
 };
 
-
 // =====================================================
 // STAT CARD
 // =====================================================
 
-const StatCard = ({
-  title,
-  value,
-  icon,
-}) => {
+const StatCard = ({ title, value, icon }) => {
   return (
     <div className="rounded-xl bg-white p-5 shadow-sm">
-
       <div className="flex items-center justify-between">
-
         <div>
-          <p className="text-sm text-gray-500">
-            {title}
-          </p>
+          <p className="text-sm text-gray-500">{title}</p>
 
-          <p className="mt-2 text-3xl font-bold text-gray-900">
-            {value}
-          </p>
+          <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
         </div>
 
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
           {icon}
         </div>
-
       </div>
-
     </div>
   );
 };
-
 
 // =====================================================
 // INPUT
 // =====================================================
 
-const Input = ({
-  label,
-  type = "text",
-  value,
-  onChange,
-}) => {
+const Input = ({ label, type = "text", value, onChange }) => {
   return (
     <div>
       <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -1173,26 +1159,16 @@ const Input = ({
   );
 };
 
-
 // =====================================================
 // MODAL
 // =====================================================
 
-const Modal = ({
-  title,
-  onClose,
-  children,
-}) => {
+const Modal = ({ title, onClose, children }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-
       <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl bg-white shadow-2xl">
-
         <div className="flex items-center justify-between border-b px-6 py-4">
-
-          <h2 className="text-xl font-bold">
-            {title}
-          </h2>
+          <h2 className="text-xl font-bold">{title}</h2>
 
           <button
             onClick={onClose}
@@ -1200,15 +1176,10 @@ const Modal = ({
           >
             <X size={20} />
           </button>
-
         </div>
 
-        <div className="p-6">
-          {children}
-        </div>
-
+        <div className="p-6">{children}</div>
       </div>
-
     </div>
   );
 };
