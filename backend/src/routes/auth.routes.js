@@ -5,7 +5,6 @@ import { authorizedRole, isAuthenticated } from "../middleware/isAuth.js";
 import {
   loginUser,
   logoutUser,
-  forceResetStudentSesssion,
   updatePassword,
   GetMe,
   verifyLoginOtp,
@@ -28,7 +27,6 @@ router.post("/login", loginUser);
 router.post("/logout", isAuthenticated, logoutUser);
 router.get("/Getme", isAuthenticated, GetMe);
 router.post("/verifyotp", verifyLoginOtp);
-router.put("/reset/:username", forceResetStudentSesssion);
 router.put("/updatePassword", isAuthenticated, updatePassword);
 router.put("/updateProfile", isAuthenticated, updateProfile);
 router.post("/forgotPassword", forgotPassword);

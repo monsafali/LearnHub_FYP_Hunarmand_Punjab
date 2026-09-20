@@ -30,9 +30,6 @@ const userSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: false },
     deactivated: { type: Boolean, default: false },
 
-    // session control
-    sessionVersion: { type: Number, default: 0 }, // >0 means active session for single-device users
-    singleDeviceEnforced: { type: Boolean, default: false }, // true for vendors
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "UserAuth" },
     // image stored on Cloudinary
     imageUrl: { type: String },

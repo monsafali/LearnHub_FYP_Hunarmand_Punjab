@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-
+import fileUpload from "express-fileupload";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -37,6 +37,12 @@ import { seedSuperAdmin } from "./utils/seed.js";
 
 const port = process.env.PORT
 const app = express();
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
 app.use(
   cors({

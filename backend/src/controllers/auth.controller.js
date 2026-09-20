@@ -100,6 +100,7 @@ export const SignupUser = catchAsyncErrors(async (req, res, next) => {
     email,
     password,
     role,
+    isActive: false,
   });
 
   const otp = Math.floor(Math.random() * 1000000).toString();
@@ -207,26 +208,6 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
 
 
 
-export const forceResetStudentSesssion = catchAsyncErrors(
-  async (req, res, next) => {
-    const { username } = req.params;
-    const user = await UserAuth.findOne({ username });
-    if (!user) return next(new ErrorHandler("User not found", 404));
-    if (user.role !== "student")
-      return next(new ErrorHandler("Only Student sessions can be reset", 403));
-
-    user.sessionVersion = 0;
-    await user.save();
-
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "other devices logout successfuly please login again",
-      });
-  }
-);
-
 
 
 export const updatePassword = catchAsyncErrors(async (req, res, next) => {
@@ -286,6 +267,7 @@ export const verifyLoginOtp = async (req, res, next) => {
   user.isOtpVerified = true;
   user.otpCode = null;
   user.otpExpiry = null;
+  user.isActive = true,
 
   await user.save();
 
@@ -446,7 +428,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
   }
 
   // Save new image
-  user.image = upload.secure_url;
+  user.imageUrl = upload.secure_url;
   user.imagePublicId = upload.public_id;
 
   // Update profile fields

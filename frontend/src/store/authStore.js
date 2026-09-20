@@ -1,6 +1,9 @@
 import { API_BASE_URL } from "../utils/api";
 
 
+
+// src/store/authStore.js
+
 import { create } from "zustand";
 
 
@@ -9,12 +12,11 @@ const useAuthStore = create((set, get) => ({
 
   loading: false,
   checkingAuth: true,
+
   otpLoading: false,
 
   showOtpModal: false,
-
   otpPurpose: null,
-
   otpUsername: "",
 
   // =========================
@@ -25,14 +27,11 @@ const useAuthStore = create((set, get) => ({
     try {
       set({ loading: true });
 
-      const response = await API_BASE_URL.post(
-        "/auth/login",
-        {
-          username,
-          password,
-          role,
-        }
-      );
+      const response = await API_BASE_URL.post("/auth/login", {
+        username,
+        password,
+        role,
+      });
 
       set({
         loading: false,
@@ -43,9 +42,7 @@ const useAuthStore = create((set, get) => ({
 
       return {
         success: true,
-        message:
-          response.data?.message ||
-          "OTP sent successfully",
+        message: response.data?.message || "OTP sent successfully",
       };
     } catch (error) {
       set({ loading: false });
@@ -98,7 +95,7 @@ const useAuthStore = create((set, get) => ({
   },
 
   // =========================
-  // VERIFY OTP
+  // VERIFY LOGIN/SIGNUP OTP
   // =========================
 
   verifyOtp: async (otp) => {
@@ -143,48 +140,192 @@ const useAuthStore = create((set, get) => ({
   },
 
   // =========================
-  // GET ME
+  // CHECK AUTH
   // =========================
 
+  checkAuth: async () => {
+    try {
+      set({ checkingAuth: true });
 
-checkAuth: async () => {
+      const response = await API_BASE_URL.get(
+        "/auth/Getme"
+      );
+
+      set({
+        user: response.data.user,
+        checkingAuth: false,
+      });
+    } catch (error) {
+      console.log(
+        "GetMe error:",
+        error.response?.data?.message || error.message
+      );
+
+      set({
+        user: null,
+        checkingAuth: false,
+      });
+    }
+  },
+
+  // =========================
+  // FORGOT PASSWORD
+  // =========================
+
+  forgotPassword: async (email) => {
+    try {
+      set({ loading: true });
+
+      const response = await API_BASE_URL.post(
+        "/auth/forgotPassword",
+        {
+          email,
+        }
+      );
+
+      set({ loading: false });
+
+      return {
+        success: true,
+        message:
+          response.data?.message ||
+          "OTP sent to your email",
+      };
+    } catch (error) {
+      set({ loading: false });
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          "Failed to send OTP",
+      };
+    }
+  },
+
+  // =========================
+  // RESET PASSWORD
+  // =========================
+
+  resetPassword: async ({
+    email,
+    otp,
+    newPassword,
+    confirmPassword,
+  }) => {
+    try {
+      set({ loading: true });
+
+      const response = await API_BASE_URL.put(
+        "/auth/resetPassword",
+        {
+          email,
+          otp,
+          newPassword,
+          confirmPassword,
+        }
+      );
+
+      set({ loading: false });
+
+      return {
+        success: true,
+        message:
+          response.data?.message ||
+          "Password reset successfully",
+      };
+    } catch (error) {
+      set({ loading: false });
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          "Failed to reset password",
+      };
+    }
+  },
+
+  // =========================
+  // UPDATE PASSWORD
+  // =========================
+
+  updatePassword: async ({
+    oldPassword,
+    newPassword,
+  }) => {
+    try {
+      set({ loading: true });
+
+      const response = await API_BASE_URL.put(
+        "/auth/updatePassword",
+        {
+          oldPassword,
+          newPassword,
+        }
+      );
+
+      set({ loading: false });
+
+      return {
+        success: true,
+        message:
+          response.data?.message ||
+          "Password updated successfully",
+      };
+    } catch (error) {
+      set({ loading: false });
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          "Failed to update password",
+      };
+    }
+  },
+
+  // =========================
+  // UPDATE PROFILE
+  // =========================
+
+updateProfile: async (formData) => {
   try {
-    set({ checkingAuth: true });
+    set({ loading: true });
 
-    console.log("Checking authentication...");
-
-    const response = await API_BASE_URL.get("/auth/Getme");
-
-    console.log("GetMe response:", response.data);
-
-    set({
-      user: response.data.user,
-      checkingAuth: false,
-    });
-  } catch (error) {
-    console.log(
-      "GetMe error:",
-      error.response?.data || error.message
+    const response = await API_BASE_URL.put(
+      "/auth/updateProfile",
+      formData
     );
 
     set({
-      user: null,
-      checkingAuth: false,
+      loading: false,
+      user: response.data.user,
     });
+
+    return {
+      success: true,
+      user: response.data.user,
+      message:
+        response.data?.message ||
+        "Profile updated successfully",
+    };
+  } catch (error) {
+    console.log(
+      "Update profile error:",
+      error.response?.data || error.message
+    );
+
+    set({ loading: false });
+
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        "Failed to update profile",
+    };
   }
 },
-
-  // =========================
-  // CLOSE OTP MODAL
-  // =========================
-
-  closeOtpModal: () => {
-    set({
-      showOtpModal: false,
-      otpPurpose: null,
-      otpUsername: "",
-    });
-  },
 
   // =========================
   // LOGOUT
@@ -194,10 +335,7 @@ checkAuth: async () => {
     try {
       await API_BASE_URL.post("/auth/logout");
     } catch (error) {
-      console.log(
-        "Logout error:",
-        error.response?.data?.message
-      );
+      console.log("Logout error:", error);
     } finally {
       set({
         user: null,
@@ -206,6 +344,18 @@ checkAuth: async () => {
         otpUsername: "",
       });
     }
+  },
+
+  // =========================
+  // CLOSE OTP
+  // =========================
+
+  closeOtpModal: () => {
+    set({
+      showOtpModal: false,
+      otpPurpose: null,
+      otpUsername: "",
+    });
   },
 }));
 
