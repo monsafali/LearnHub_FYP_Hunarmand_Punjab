@@ -47,7 +47,7 @@ const AdminDashboard = () => {
 
     createInstructor,
     updateInstructor,
-    toggleInstructorStatus,
+    deleteInstructor,
   } = useAdminStore();
 
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -174,8 +174,8 @@ const AdminDashboard = () => {
   // ACTIVATE / DEACTIVATE
   // =====================================================
 
-  const handleToggleStatus = async (id) => {
-    const result = await toggleInstructorStatus(id);
+  const DeleteInstructor = async (id) => {
+    const result = await deleteInstructor(id);
 
     if (!result.success) {
       toast.error(result.message);
@@ -329,25 +329,7 @@ const AdminDashboard = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            {user?.imageUrl ? (
-              <img
-                src={user.imageUrl}
-                alt={user.fullname}
-                className="h-10 w-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-semibold text-white">
-                {user?.fullname?.charAt(0)?.toUpperCase()}
-              </div>
-            )}
-
-            <div>
-              <p className="text-sm font-semibold">{user?.fullname}</p>
-
-              <p className="text-xs text-gray-500">Administrator</p>
-            </div>
-          </div>
+        
         </header>
 
         <div className="p-4 md:p-8">
@@ -759,17 +741,12 @@ const AdminDashboard = () => {
 
                               <button
                                 onClick={() =>
-                                  handleToggleStatus(instructor._id)
+                                  DeleteInstructor(instructor._id)
                                 }
-                                className={`rounded-lg px-3 py-2 text-xs font-medium text-white ${
-                                  instructor.isActive
-                                    ? "bg-red-500 hover:bg-red-600"
-                                    : "bg-green-600 hover:bg-green-700"
-                                }`}
+                                className={`rounded-lg px-3 py-2 text-xs font-medium text-white bg-red-500 hover:bg-red-600`}
                               >
-                                {instructor.isActive
-                                  ? "Deactivate"
-                                  : "Activate"}
+                                Delete
+
                               </button>
                             </div>
                           </td>

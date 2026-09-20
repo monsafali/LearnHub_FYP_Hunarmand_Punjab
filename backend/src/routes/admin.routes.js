@@ -7,7 +7,7 @@ import {
   getAllInstructors,
   getInstructorById,
   updateInstructor,
-  toggleInstructorStatus,
+  deleteInstructor,
 } from "../controllers//adminController.js";
 
 import {
@@ -71,11 +71,11 @@ router.put(
 
 
 // Activate / deactivate
-router.patch(
-  "/instructors/:id/status",
+router.delete(
+  "/instructor/:id",
   isAuthenticated,
   authorizedRole("Admin"),
-  toggleInstructorStatus
+  deleteInstructor
 );
 
 export default router;

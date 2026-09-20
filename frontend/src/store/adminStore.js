@@ -198,50 +198,44 @@ const useAdminStore = create((set) => ({
   // TOGGLE INSTRUCTOR STATUS
   // =====================================================
 
-  toggleInstructorStatus: async (id) => {
-    try {
-      set({
-        loading: true,
-        error: null,
-      });
+deleteInstructor: async (id) => {
+  try {
+    set({
+      loading: true,
+      error: null,
+    });
 
-      const response =
-        await API_BASE_URL.patch(
-          `/admin/instructors/${id}/status`
-        );
+    const response = await API_BASE_URL.delete(
+      `/admin/instructor/${id}`
+    );
 
-      set((state) => ({
-        instructors: state.instructors.map(
-          (instructor) =>
-            instructor._id === id
-              ? response.data.instructor
-              : instructor
-        ),
+    set((state) => ({
+      instructors: state.instructors.filter(
+        (instructor) => instructor._id !== id
+      ),
+      loading: false,
+    }));
 
-        loading: false,
-      }));
+    return {
+      success: true,
+      message: response.data.message,
+    };
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      "Failed to delete instructor";
 
-      return {
-        success: true,
-        instructor: response.data.instructor,
-        message: response.data.message,
-      };
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        "Failed to update instructor status";
+    set({
+      loading: false,
+      error: message,
+    });
 
-      set({
-        loading: false,
-        error: message,
-      });
-
-      return {
-        success: false,
-        message,
-      };
-    }
-  },
+    return {
+      success: false,
+      message,
+    };
+  }
+},
 
 
   // =====================================================

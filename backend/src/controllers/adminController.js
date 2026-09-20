@@ -350,7 +350,11 @@ export const updateInstructor = catchAsyncErrors(
 // ACTIVATE / DEACTIVATE INSTRUCTOR
 // =====================================================
 
-export const toggleInstructorStatus = catchAsyncErrors(
+
+
+
+
+export const deleteInstructor = catchAsyncErrors(
   async (req, res, next) => {
     const { id } = req.params;
 
@@ -365,25 +369,11 @@ export const toggleInstructorStatus = catchAsyncErrors(
       );
     }
 
-    instructor.isActive = !instructor.isActive;
-    instructor.deactivated = !instructor.isActive;
-
-    await instructor.save();
+    await UserAuth.findByIdAndDelete(id);
 
     res.status(200).json({
       success: true,
-      message: instructor.isActive
-        ? "Instructor activated successfully"
-        : "Instructor deactivated successfully",
-      instructor: {
-        _id: instructor._id,
-        fullname: instructor.fullname,
-        username: instructor.username,
-        email: instructor.email,
-        role: instructor.role,
-        isActive: instructor.isActive,
-        deactivated: instructor.deactivated,
-      },
+      message: "Instructor deleted successfully",
     });
   }
 );
