@@ -6,6 +6,7 @@ import {
   getAllCourses,
   enrollCourse,
   getEnrolledCourses,
+  getMyCourseWithLessons
 } from "../controllers/studentController.js";
 
 import { isAuthenticated, authorizedRole } from "../middleware/isAuth.js";
@@ -29,6 +30,14 @@ router.get(
   isAuthenticated,
   authorizedRole("Student"),
   getEnrolledCourses,
+);
+
+
+router.get(
+  "/my-courses/:courseId",
+  isAuthenticated,
+  authorizedRole("Student"),
+  getMyCourseWithLessons
 );
 
 export default router;

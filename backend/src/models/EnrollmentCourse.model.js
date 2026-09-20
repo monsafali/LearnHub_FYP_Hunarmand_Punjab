@@ -43,10 +43,14 @@ const enrollmentSchema = new mongoose.Schema(
   }
 );
 
-// Same student cannot enroll in same course twice
 enrollmentSchema.index(
   { student: 1, course: 1 },
   { unique: true }
 );
 
-export default mongoose.model("Enrollment", enrollmentSchema);
+const EnrollmentCourse = mongoose.model(
+  "EnrollmentCourse",
+  enrollmentSchema
+);
+
+export default EnrollmentCourse;

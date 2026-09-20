@@ -37,11 +37,13 @@ const lessonSchema = new mongoose.Schema(
     duration: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     order: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     isPublished: {
@@ -51,7 +53,14 @@ const lessonSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export default mongoose.model("Lesson", lessonSchema);
+lessonSchema.index({
+  course: 1,
+  order: 1,
+});
+
+const Lesson = mongoose.model("Lesson", lessonSchema);
+
+export default Lesson;

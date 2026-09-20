@@ -11,119 +11,129 @@ import ChangePassword from "./pages/auth/ChangePassword";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
-import StudentDashboard from "./pages/student/StudentDashboard";
-
+import StudentLMS from "./pages/student/StudentLMS";
+import StudentCourse from "./pages/student/StudentCourse";
+import Home from "./pages/home/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
 
 const App = () => {
   return (
+
     <Routes>
 
-      {/* ================= AUTH ================= */}
+  {/* ================= PUBLIC ================= */}
 
-      <Route
-        path="/login"
-        element={<Login />}
-      />
+  <Route path="/" element={<Home />} />
 
-      <Route
-        path="/signup"
-        element={<Signup />}
-      />
+  <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/forgot-password"
-        element={<ForgotPassword />}
-      />
+  <Route path="/signup" element={<Signup />} />
 
-      <Route
-        path="/reset-password"
-        element={<ResetPassword />}
-      />
+  <Route
+    path="/forgot-password"
+    element={<ForgotPassword />}
+  />
 
-      <Route
-        path="/unauthorized"
-        element={<Unauthorized />}
-      />
+  <Route
+    path="/reset-password"
+    element={<ResetPassword />}
+  />
 
-      {/* ================= AUTHENTICATED ================= */}
+  <Route
+    path="/unauthorized"
+    element={<Unauthorized />}
+  />
 
-      <Route element={<ProtectedRoute allowedRoles={["Admin", "Instructor", "Student"]} />}>
 
-        <Route element={<MainLayout />}>
+  {/* ================= STUDENT ================= */}
 
-          {/* Profile */}
-
-          <Route
-            path="/profile"
-            element={<Profile />}
-          />
-
-          {/* Change Password */}
-
-          <Route
-            path="/change-password"
-            element={<ChangePassword />}
-          />
-
-        </Route>
-
-      </Route>
-
-      {/* ================= ADMIN ================= */}
-
-      <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-
-        <Route element={<MainLayout />}>
-
-          <Route
-            path="/admin/dashboard"
-            element={<AdminDashboard />}
-          />
-
-        </Route>
-
-      </Route>
-
-      {/* ================= INSTRUCTOR ================= */}
-
-      <Route element={<ProtectedRoute allowedRoles={["Instructor"]} />}>
-
-        <Route element={<MainLayout />}>
-
-          <Route
-            path="/instructor/dashboard"
-            element={<InstructorDashboard />}
-          />
-
-        </Route>
-
-      </Route>
-
-      {/* ================= STUDENT ================= */}
 
       <Route element={<ProtectedRoute allowedRoles={["Student"]} />}>
+  <Route element={<MainLayout />}>
+    <Route
+      path="/student/lms"
+      element={<StudentLMS />}
+    />
 
-        <Route element={<MainLayout />}>
+    <Route
+      path="/student/lms/course/:courseId"
+      element={<StudentCourse />}
+    />
+  </Route>
+</Route>
 
-          <Route
-            path="/student/dashboard"
-            element={<StudentDashboard />}
-          />
+  {/* ================= INSTRUCTOR ================= */}
 
-        </Route>
-
-      </Route>
-
-      {/* ================= DEFAULT ================= */}
+  <Route
+    element={
+      <ProtectedRoute allowedRoles={["Instructor"]} />
+    }
+  >
+    <Route element={<MainLayout />}>
 
       <Route
-        path="*"
-        element={<Navigate to="/login" replace />}
+        path="/instructor/dashboard"
+        element={<InstructorDashboard />}
       />
 
-    </Routes>
+    </Route>
+  </Route>
+
+
+  {/* ================= ADMIN ================= */}
+
+  <Route
+    element={
+      <ProtectedRoute allowedRoles={["Admin"]} />
+    }
+  >
+    <Route element={<MainLayout />}>
+
+      <Route
+        path="/admin/dashboard"
+        element={<AdminDashboard />}
+      />
+
+    </Route>
+  </Route>
+
+
+  {/* ================= PROFILE ================= */}
+
+  <Route
+    element={
+      <ProtectedRoute
+        allowedRoles={[
+          "Admin",
+          "Instructor",
+          "Student",
+        ]}
+      />
+    }
+  >
+    <Route element={<MainLayout />}>
+
+      <Route
+        path="/profile"
+        element={<Profile />}
+      />
+
+      <Route
+        path="/change-password"
+        element={<ChangePassword />}
+      />
+
+    </Route>
+  </Route>
+
+
+  <Route
+    path="*"
+    element={<Navigate to="/" replace />}
+  />
+
+</Routes>
   );
 };
 

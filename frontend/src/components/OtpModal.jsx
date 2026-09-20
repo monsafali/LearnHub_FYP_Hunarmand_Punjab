@@ -63,7 +63,11 @@ const OtpModal = () => {
         replace: true,
       });
     } else if (result.user.role === "Student") {
-      navigate("/student/dashboard", {
+      navigate("/student/lms", {
+        replace: true,
+      })
+    } else {
+      navigate("/", {
         replace: true,
       });
     }

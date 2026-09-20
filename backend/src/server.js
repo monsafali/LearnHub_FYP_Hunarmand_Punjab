@@ -37,6 +37,7 @@ import { seedSuperAdmin } from "./utils/seed.js";
 
 const port = process.env.PORT
 const app = express();
+app.use(express.urlencoded({ extended: true }));
 app.use(
   fileUpload({
     useTempFiles: true,
@@ -59,7 +60,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", AuthRoutes);
 app.use("/api/course", InstructorRoutes)
-app.use("/api/students", CoursesRoutes)
+app.use("/api/student", CoursesRoutes)
 
 
 
