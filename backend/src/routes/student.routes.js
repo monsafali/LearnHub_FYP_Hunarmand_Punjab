@@ -4,9 +4,10 @@ import express from "express";
 
 import {
   getAllCourses,
+  getCourseById,
   enrollCourse,
   getEnrolledCourses,
-  getMyCourseWithLessons
+  getMyCourseWithLessons,
 } from "../controllers/studentController.js";
 
 import { isAuthenticated, authorizedRole } from "../middleware/isAuth.js";
@@ -15,6 +16,7 @@ const router = express.Router();
 
 // Browse courses
 router.get("/courses", getAllCourses);
+router.get("/courses/:id", getCourseById);
 
 // Enroll in course
 router.post(
@@ -32,12 +34,11 @@ router.get(
   getEnrolledCourses,
 );
 
-
 router.get(
   "/my-courses/:courseId",
   isAuthenticated,
   authorizedRole("Student"),
-  getMyCourseWithLessons
+  getMyCourseWithLessons,
 );
 
 export default router;

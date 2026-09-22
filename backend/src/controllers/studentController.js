@@ -6,9 +6,6 @@ import { ErrorHandler } from "../middleware/errorMiddleware.js";
 import { catchAsyncErrors } from "../middleware/catchAsyncErrors.js";
 
 
-// =====================================================
-// GET ALL COURSES - PUBLIC
-// =====================================================
 
 export const getAllCourses = catchAsyncErrors(
   async (req, res, next) => {
@@ -30,9 +27,23 @@ export const getAllCourses = catchAsyncErrors(
 );
 
 
-// =====================================================
-// ENROLL COURSE - STUDENT ONLY
-// =====================================================
+export const getCourseById = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.params;
+
+  const course = await Course.findById(id).populate(
+    "trainer",
+    "fullname username email imageUrl bio",
+  );
+
+  if (!course) {
+    return next(new ErrorHandler("Course not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    course,
+  })
+});
 
 
 export const enrollCourse = catchAsyncErrors(async (req, res, next) => {
@@ -79,11 +90,6 @@ export const enrollCourse = catchAsyncErrors(async (req, res, next) => {
 });
 
 
-// =====================================================
-// GET STUDENT'S ENROLLED COURSES
-// =====================================================
-
-
 export const getEnrolledCourses = catchAsyncErrors(
   async (req, res, next) => {
     const enrollments = await EntrollmentCourse.find({
@@ -107,10 +113,6 @@ export const getEnrolledCourses = catchAsyncErrors(
   }
 );
 
-
-// =====================================================
-// GET ONE ENROLLED COURSE + LESSONS
-// =====================================================
 
 
 

@@ -1,5 +1,7 @@
+
+
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import Navbar from "../../components/Navbar";
@@ -31,23 +33,27 @@ const Home = () => {
     (state) => state.enrollCourse
   );
 
-
   // =====================================================
   // LOAD ALL COURSES
   // =====================================================
 
   useEffect(() => {
     getAllCourses();
-  }, []);
+  }, [getAllCourses]);
 
+  // =====================================================
+  // OPEN COURSE DETAILS
+  // =====================================================
+
+  const handleCourseClick = (courseId) => {
+    navigate(`/courses/${courseId}`);
+  };
 
   // =====================================================
   // ENROLL
   // =====================================================
 
-  const handleEnroll = async (
-    courseId
-  ) => {
+  const handleEnroll = async (courseId) => {
     // Not logged in
     if (!user) {
       toast.error(
@@ -68,12 +74,10 @@ const Home = () => {
       return;
     }
 
-    const result =
-      await enrollCourse(courseId);
+    const result = await enrollCourse(courseId);
 
     if (!result.success) {
       toast.error(result.message);
-
       return;
     }
 
@@ -85,52 +89,37 @@ const Home = () => {
     navigate("/student/lms");
   };
 
-
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
-
       <Navbar />
-
 
       {/* ================================================= */}
       {/* HERO */}
       {/* ================================================= */}
 
       <section className="bg-white px-6 py-20">
-
         <div className="mx-auto max-w-7xl">
-
           <h1 className="max-w-3xl text-5xl font-bold tracking-tight">
-
             Learn New Skills.
             <br />
-
             Build Your Future.
-
           </h1>
 
           <p className="mt-6 max-w-2xl text-lg text-gray-600">
-
             Explore courses created by our instructors
             and start learning today.
-
           </p>
-
         </div>
-
       </section>
-
 
       {/* ================================================= */}
       {/* ALL COURSES */}
       {/* ================================================= */}
 
       <section className="flex-1 px-6 py-16">
-
         <div className="mx-auto max-w-7xl">
 
           <div className="mb-10">
-
             <h2 className="text-3xl font-bold">
               All Courses
             </h2>
@@ -138,29 +127,29 @@ const Home = () => {
             <p className="mt-2 text-gray-600">
               Browse courses from all of our instructors.
             </p>
-
           </div>
 
-
-          {/* Loading */}
+          {/* ================================================= */}
+          {/* LOADING */}
+          {/* ================================================= */}
 
           {loading && (
             <div className="py-20 text-center">
+              <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-black" />
 
               <p className="text-lg text-gray-500">
                 Loading courses...
               </p>
-
             </div>
           )}
 
-
-          {/* No Courses */}
+          {/* ================================================= */}
+          {/* NO COURSES */}
+          {/* ================================================= */}
 
           {!loading &&
             courses.length === 0 && (
               <div className="rounded-xl border bg-white p-12 text-center">
-
                 <h3 className="text-xl font-semibold">
                   No courses available
                 </h3>
@@ -169,104 +158,94 @@ const Home = () => {
                   Instructors haven't created any
                   courses yet.
                 </p>
-
               </div>
             )}
 
-
-          {/* Courses */}
+          {/* ================================================= */}
+          {/* COURSES */}
+          {/* ================================================= */}
 
           {!loading &&
             courses.length > 0 && (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
-                {courses.map(
-                  (course) => (
+                {courses.map((course) => (
+                  <div
+                    key={course._id}
+                    className="group overflow-hidden rounded-xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+                  >
+
+                    {/* ================================================= */}
+                    {/* COURSE CLICK AREA */}
+                    {/* ================================================= */}
+
                     <div
-                      key={course._id}
-                      className="overflow-hidden rounded-xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                      onClick={() =>
+                        handleCourseClick(course._id)
+                      }
+                      className="cursor-pointer"
                     >
 
                       {/* Course Image */}
 
-                      <img
-                        src={
-                          course.imageUrl
-                        }
-                        alt={
-                          course.name
-                        }
-                        className="h-52 w-full object-cover"
-                      />
-
+                      <div className="overflow-hidden">
+                        <img
+                          src={
+                            course.imageUrl ||
+                            "https://via.placeholder.com/800x450?text=Course"
+                          }
+                          alt={course.name}
+                          className="h-52 w-full object-cover transition duration-300 group-hover:scale-105"
+                        />
+                      </div>
 
                       <div className="p-5">
 
                         {/* Category */}
 
                         <p className="text-sm font-medium text-blue-600">
-                          {
-                            course.category
-                          }
+                          {course.category}
                         </p>
-
 
                         {/* Name */}
 
-                        <h3 className="mt-2 text-xl font-bold">
-                          {
-                            course.name
-                          }
+                        <h3 className="mt-2 text-xl font-bold transition group-hover:text-blue-600">
+                          {course.name}
                         </h3>
-
 
                         {/* Description */}
 
                         <p className="mt-3 line-clamp-3 text-sm text-gray-600">
-                          {
-                            course.description
-                          }
+                          {course.description}
                         </p>
-
 
                         {/* Instructor */}
 
                         {course.trainer && (
                           <div className="mt-5 flex items-center gap-3">
 
-                            {course.trainer
-                              .imageUrl ? (
+                            {course.trainer.imageUrl ? (
                               <img
                                 src={
-                                  course
-                                    .trainer
-                                    .imageUrl
+                                  course.trainer.imageUrl
                                 }
                                 alt={
-                                  course
-                                    .trainer
-                                    .fullname
+                                  course.trainer.fullname
                                 }
                                 className="h-10 w-10 rounded-full object-cover"
                               />
                             ) : (
                               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 font-semibold">
-                                {
-                                  course
-                                    .trainer
-                                    .fullname?.charAt(
-                                      0
-                                    )
-                                }
+                                {course.trainer.fullname?.charAt(
+                                  0
+                                )}
                               </div>
                             )}
 
                             <div>
-
                               <p className="text-sm font-semibold">
                                 {
-                                  course
-                                    .trainer
+                                  course.trainer
                                     .fullname
                                 }
                               </p>
@@ -274,62 +253,50 @@ const Home = () => {
                               <p className="text-xs text-gray-500">
                                 Instructor
                               </p>
-
                             </div>
 
                           </div>
                         )}
+                      </div>
+                    </div>
 
+                    {/* ================================================= */}
+                    {/* PRICE + ENROLL */}
+                    {/* ================================================= */}
 
-                        {/* Price + Enroll */}
+                    <div className="flex items-center justify-between border-t px-5 py-4">
 
-                        <div className="mt-6 flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          Course Price
+                        </p>
 
-                          <div>
-                            <p className="text-xs text-gray-500">
-                              Course Price
-                            </p>
-
-                            <p className="text-xl font-bold">
-                              Rs.{" "}
-                              {
-                                course.price
-                              }
-                            </p>
-                          </div>
-
-
-                          <button
-                            onClick={() =>
-                              handleEnroll(
-                                course._id
-                              )
-                            }
-                            className="rounded-lg bg-black px-5 py-2.5 font-medium text-white transition hover:bg-gray-800"
-                          >
-                            Enroll
-                          </button>
-
-                        </div>
-
+                        <p className="text-xl font-bold">
+                          Rs. {course.price}
+                        </p>
                       </div>
 
-                    </div>
-                  )
-                )}
+                      <button
+                        onClick={() =>
+                          handleEnroll(course._id)
+                        }
+                        className="rounded-lg bg-black px-5 py-2.5 font-medium text-white transition hover:bg-gray-800"
+                      >
+                        Enroll
+                      </button>
 
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-
         </div>
-
       </section>
 
-
       <Footer />
-
     </div>
   );
 };
 
 export default Home;
+

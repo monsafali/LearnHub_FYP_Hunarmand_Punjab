@@ -1,23 +1,16 @@
 
 
+
 import { API_BASE_URL } from "../utils/api";
-
 import { create } from "zustand";
-
 
 const useStudentStore = create((set) => ({
   courses: [],
-
   enrolledCourses: [],
-
   selectedCourse: null,
-
   lessons: [],
-
   loading: false,
-
   error: null,
-
 
   // =====================================================
   // GET ALL PUBLIC COURSES
@@ -30,23 +23,18 @@ const useStudentStore = create((set) => ({
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.get(
-          "/student/courses"
-        );
+      const response = await API_BASE_URL.get(
+        "/student/courses"
+      );
 
       set({
-        courses:
-          response.data.courses || [],
-
+        courses: response.data.courses || [],
         loading: false,
       });
 
       return {
         success: true,
-
-        courses:
-          response.data.courses || [],
+        courses: response.data.courses || [],
       };
     } catch (error) {
       const message =
@@ -65,24 +53,63 @@ const useStudentStore = create((set) => ({
     }
   },
 
+  // =====================================================
+  // GET SINGLE PUBLIC COURSE
+  // =====================================================
+
+  getCourseById: async (courseId) => {
+    try {
+      set({
+        loading: true,
+        error: null,
+        selectedCourse: null,
+      });
+
+      const response = await API_BASE_URL.get(
+        `/student/courses/${courseId}`
+      );
+
+      set({
+        selectedCourse: response.data.course,
+        loading: false,
+      });
+
+      return {
+        success: true,
+        course: response.data.course,
+      };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Failed to load course";
+
+      set({
+        loading: false,
+        error: message,
+        selectedCourse: null,
+      });
+
+      return {
+        success: false,
+        message,
+      };
+    }
+  },
 
   // =====================================================
-  // ENROLL
+  // ENROLL COURSE
   // =====================================================
 
-  enrollCourse: async (
-    courseId
-  ) => {
+  enrollCourse: async (courseId) => {
     try {
       set({
         loading: true,
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.post(
-          `/student/courses/${courseId}/enroll`
-        );
+      const response = await API_BASE_URL.post(
+        `/student/courses/${courseId}/enroll`
+      );
 
       set({
         loading: false,
@@ -90,10 +117,7 @@ const useStudentStore = create((set) => ({
 
       return {
         success: true,
-
-        enrollment:
-          response.data.enrollment,
-
+        enrollment: response.data.enrollment,
         message:
           response.data.message ||
           "Successfully enrolled",
@@ -115,7 +139,6 @@ const useStudentStore = create((set) => ({
     }
   },
 
-
   // =====================================================
   // GET MY COURSES
   // =====================================================
@@ -127,25 +150,20 @@ const useStudentStore = create((set) => ({
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.get(
-          "/student/my-courses"
-        );
+      const response = await API_BASE_URL.get(
+        "/student/my-courses"
+      );
 
       set({
         enrolledCourses:
-          response.data.enrollments ||
-          [],
-
+          response.data.enrollments || [],
         loading: false,
       });
 
       return {
         success: true,
-
         enrollments:
-          response.data.enrollments ||
-          [],
+          response.data.enrollments || [],
       };
     } catch (error) {
       const message =
@@ -164,47 +182,48 @@ const useStudentStore = create((set) => ({
     }
   },
 
-
   // =====================================================
-  // GET COURSE + LESSONS
+  // GET MY COURSE + LESSONS
   // =====================================================
 
- getMyCourseWithLessons: async (courseId) => {
-  try {
-    set({ loading: true, error: null });
+  getMyCourseWithLessons: async (courseId) => {
+    try {
+      set({
+        loading: true,
+        error: null,
+      });
 
-    const response = await API_BASE_URL.get(
-      `/student/my-courses/${courseId}`
-    );
+      const response = await API_BASE_URL.get(
+        `/student/my-courses/${courseId}`
+      );
 
-    set({
-      selectedCourse: response.data.course,
-      lessons: response.data.lessons || [],
-      loading: false,
-    });
+      set({
+        selectedCourse: response.data.course,
+        lessons: response.data.lessons || [],
+        loading: false,
+      });
 
-    return {
-      success: true,
-      course: response.data.course,
-      lessons: response.data.lessons || [],
-    };
-  } catch (error) {
-    const message =
-      error.response?.data?.message ||
-      "Failed to load course";
+      return {
+        success: true,
+        course: response.data.course,
+        lessons: response.data.lessons || [],
+      };
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Failed to load course";
 
-    set({
-      loading: false,
-      error: message,
-    });
+      set({
+        loading: false,
+        error: message,
+      });
 
-    return {
-      success: false,
-      message,
-    };
-  }
-},
-
+      return {
+        success: false,
+        message,
+      };
+    }
+  },
 
   // =====================================================
   // CLEAR COURSE
@@ -219,3 +238,4 @@ const useStudentStore = create((set) => ({
 }));
 
 export default useStudentStore;
+
