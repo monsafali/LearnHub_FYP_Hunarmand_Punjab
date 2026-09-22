@@ -120,7 +120,7 @@ const OtpModal = () => {
                   .slice(0, 6)
               )
             }
-            placeholder="Enter 6 digit OTP"
+            placeholder="*******"
             maxLength={6}
             className="w-full rounded-lg border px-4 py-3 text-center text-2xl tracking-[8px] outline-none focus:border-blue-500"
           />
