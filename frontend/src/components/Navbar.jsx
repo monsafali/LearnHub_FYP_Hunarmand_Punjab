@@ -71,8 +71,6 @@
 
 // export default Navbar;
 
-
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -117,13 +115,10 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b bg-white">
+    <nav className=" sticky top-0 z-50  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         {/* Logo */}
-        <Link
-          to="/"
-          className="text-2xl font-bold text-blue-600"
-        >
+        <Link to="/" className="text-2xl font-bold text-blue-600">
           LearnHub
         </Link>
 
@@ -163,9 +158,7 @@ const Navbar = () => {
                     {user.fullname}
                   </p>
 
-                  <p className="text-xs text-gray-500">
-                    {user.role}
-                  </p>
+                  <p className="text-xs text-gray-500">{user.role}</p>
                 </div>
 
                 <ChevronDown
@@ -197,9 +190,7 @@ const Navbar = () => {
                           />
                         ) : (
                           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 font-semibold text-white">
-                            {user.fullname
-                              ?.charAt(0)
-                              ?.toUpperCase() || "U"}
+                            {user.fullname?.charAt(0)?.toUpperCase() || "U"}
                           </div>
                         )}
 
@@ -226,9 +217,7 @@ const Navbar = () => {
                         <LayoutDashboard size={18} />
 
                         <span>
-                          {user.role === "Student"
-                            ? "My LMS"
-                            : "Dashboard"}
+                          {user.role === "Student" ? "My LMS" : "Dashboard"}
                         </span>
                       </Link>
 
