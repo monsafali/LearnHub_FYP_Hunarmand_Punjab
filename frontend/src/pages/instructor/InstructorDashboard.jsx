@@ -4,9 +4,7 @@ import { toast } from "react-hot-toast";
 import useAuthStore from "../../store/authStore";
 import useInstructorStore from "../../store/instructorStore";
 
-/* =====================================================
-   ICONS (inline SVG, no extra dependency needed)
-===================================================== */
+
 const ICON_PATHS = {
   home: "M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25",
   book: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25",
@@ -187,9 +185,7 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-/* =====================================================
-   MAIN COMPONENT
-===================================================== */
+
 const InstructorDashboard = () => {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
@@ -322,7 +318,6 @@ const InstructorDashboard = () => {
   };
 
   const navItems = [
-    { id: "overview", label: "Overview", icon: "home" },
     {
       id: "courses",
       label: "My courses",
@@ -334,8 +329,7 @@ const InstructorDashboard = () => {
 
   const pageMeta = {
     overview: {
-      title: "Overview",
-      subtitle: "A quick look at your teaching space",
+
     },
     courses: {
       title: "My courses",
@@ -626,19 +620,6 @@ const InstructorDashboard = () => {
         </button>
       </div>
 
-      {/* primary action */}
-      <div className="relative px-4 pb-2 pt-3">
-        <button
-          onClick={() => {
-            setSidebarOpen(false);
-            openCreateCourse();
-          }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-indigo-900/40 transition hover:bg-indigo-500"
-        >
-          <Icon name="plus" className="h-4 w-4" />
-          New course
-        </button>
-      </div>
 
       {/* nav */}
       <nav className="relative mt-4 flex-1 space-y-1 overflow-y-auto px-4">
@@ -685,244 +666,10 @@ const InstructorDashboard = () => {
           );
         })}
       </nav>
-
-      {/* user card */}
-      <div className="relative m-4 rounded-2xl bg-white/5 p-3 ring-1 ring-white/10">
-        <div className="flex items-center gap-3">
-          {user?.imageUrl ? (
-            <img
-              src={user.imageUrl}
-              alt={user.fullname}
-              className="h-10 w-10 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 text-sm font-semibold text-white">
-              {user?.fullname?.charAt(0)?.toUpperCase() || "I"}
-            </div>
-          )}
-
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-white">
-              {user?.fullname || "Instructor"}
-            </p>
-            <p className="truncate text-xs text-slate-500">
-              {user?.role || "Instructor"}
-            </p>
-          </div>
-
-          {typeof logout === "function" && (
-            <button
-              onClick={logout}
-              aria-label="Log out"
-              title="Log out"
-              className="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-white"
-            >
-              <Icon name="logout" className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-      </div>
     </aside>
   );
 
-  /* =====================================================
-     VIEW: OVERVIEW
-  ===================================================== */
-  const overviewView = (
-    <div className="space-y-6">
-      {/* welcome banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-700 p-6 text-white shadow-lg shadow-indigo-600/20 md:p-8">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10" />
-        <div className="pointer-events-none absolute -bottom-24 right-32 h-56 w-56 rounded-full bg-amber-400/20" />
 
-        <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-xl">
-            <h2 className="text-2xl font-semibold md:text-3xl">
-              {getGreeting()}, {user?.fullname?.split(" ")[0] || "Instructor"}
-            </h2>
-            <p className="mt-2 text-sm text-indigo-100 md:text-base">
-              {stats.total === 0
-                ? "You haven't published a course yet. Start with your first one."
-                : `You are teaching ${stats.total} ${
-                    stats.total === 1 ? "course" : "courses"
-                  }. Add a lesson or check who has enrolled.`}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={openCreateCourse}
-              className="flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-medium text-indigo-700 shadow-sm transition hover:bg-indigo-50"
-            >
-              <Icon name="plus" className="h-4 w-4" />
-              New course
-            </button>
-            <button
-              onClick={() => goTo("students")}
-              className="rounded-xl bg-white/15 px-5 py-3 text-sm font-medium text-white ring-1 ring-inset ring-white/30 transition hover:bg-white/25"
-            >
-              View students
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* stats strip */}
-      <div className="grid grid-cols-2 divide-slate-100 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 lg:grid-cols-4 lg:divide-x">
-        {[
-          {
-            label: "Total courses",
-            value: stats.total,
-            icon: "book",
-            tone: "bg-indigo-50 text-indigo-600",
-          },
-          {
-            label: "Categories",
-            value: stats.categories.length,
-            icon: "grid",
-            tone: "bg-emerald-50 text-emerald-600",
-          },
-          {
-            label: "Average price",
-            value: formatPrice(stats.avgPrice),
-            icon: "coin",
-            tone: "bg-amber-50 text-amber-600",
-          },
-          {
-            label: "Catalog value",
-            value: formatPrice(stats.catalogValue),
-            icon: "coin",
-            tone: "bg-rose-50 text-rose-600",
-          },
-        ].map((item) => (
-          <div key={item.label} className="flex items-center gap-4 p-5">
-            <div
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${item.tone}`}
-            >
-              <Icon name={item.icon} className="h-5 w-5" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm text-slate-500">{item.label}</p>
-              <p className="truncate text-xl font-semibold text-slate-900">
-                {item.value}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        {/* recent courses */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100 xl:col-span-2">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base font-semibold text-slate-900">
-              Recent courses
-            </h3>
-            <button
-              onClick={() => goTo("courses")}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
-            >
-              See all courses
-            </button>
-          </div>
-
-          {instructorCourses.length === 0 ? (
-            <div className="rounded-xl bg-slate-50 py-10 text-center text-sm text-slate-500">
-              Your courses will show up here once you create one.
-            </div>
-          ) : (
-            <ul className="divide-y divide-slate-100">
-              {instructorCourses.slice(0, 5).map((course) => (
-                <li
-                  key={course._id}
-                  className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0"
-                >
-                  <CourseThumb
-                    course={course}
-                    className="h-14 w-20 shrink-0 rounded-lg"
-                  />
-
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-slate-900">
-                      {course.name}
-                    </p>
-                    <p className="text-sm text-slate-500">
-                      {course.category} · {formatPrice(course.price)}
-                    </p>
-                  </div>
-
-                  <div className="flex gap-1.5">
-                    <button
-                      onClick={() => openLessonModal(course)}
-                      title="Add lesson"
-                      aria-label={`Add lesson to ${course.name}`}
-                      className="rounded-lg p-2 text-slate-400 transition hover:bg-emerald-50 hover:text-emerald-600"
-                    >
-                      <Icon name="video" className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => openStudents(course)}
-                      title="View students"
-                      aria-label={`View students of ${course.name}`}
-                      className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-50 hover:text-indigo-600"
-                    >
-                      <Icon name="users" className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => openEditCourse(course)}
-                      title="Edit course"
-                      aria-label={`Edit ${course.name}`}
-                      className="rounded-lg p-2 text-slate-400 transition hover:bg-amber-50 hover:text-amber-600"
-                    >
-                      <Icon name="pencil" className="h-4 w-4" />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* category breakdown */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
-          <h3 className="mb-4 text-base font-semibold text-slate-900">
-            Courses by category
-          </h3>
-
-          {stats.categories.length === 0 ? (
-            <div className="rounded-xl bg-slate-50 py-10 text-center text-sm text-slate-500">
-              No categories yet.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {stats.categories.map(([name, count]) => (
-                <div key={name}>
-                  <div className="mb-1.5 flex justify-between text-sm">
-                    <span className="truncate font-medium text-slate-700">
-                      {name}
-                    </span>
-                    <span className="text-slate-500">{count}</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className={`h-full rounded-full ${
-                        BAR_STYLES[hashIndex(name, BAR_STYLES.length)]
-                      }`}
-                      style={{ width: `${(count / stats.total) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  /* =====================================================
-     VIEW: COURSES
-  ===================================================== */
   const coursesView = (
     <div className="space-y-5">
       {/* toolbar */}
@@ -1195,7 +942,11 @@ const InstructorDashboard = () => {
      RENDER
   ===================================================== */
   return (
-    <div className="min-h-screen bg-slate-50">
+    <>
+
+ <div className="min-h-screen bg-slate-50">
+
+
       {sidebar}
 
       {/* mobile overlay */}
@@ -1250,7 +1001,7 @@ const InstructorDashboard = () => {
 
         {/* page content */}
         <main className="mx-auto max-w-7xl p-4 md:p-8">
-          {activeView === "overview" && overviewView}
+          {activeView === "overview" && coursesView}
           {activeView === "courses" && coursesView}
           {activeView === "students" && studentsView}
         </main>
@@ -1389,6 +1140,8 @@ const InstructorDashboard = () => {
         </Modal>
       )}
     </div>
+    </>
+
   );
 };
 

@@ -1,6 +1,3 @@
-
-
-
 import { v2 as cloudinary } from "cloudinary";
 import path from "path";
 import dotenv from "dotenv";
@@ -17,13 +14,11 @@ export const connectCloudinary = () => {
 
 export function isFileTypeSupported(
   fileName,
-  supportedTypes = ["jpg", "jpeg", "png"]
+  supportedTypes = ["jpg", "jpeg", "png", "pdf"],
 ) {
   const ext = path.extname(fileName).slice(1).toLowerCase();
   return supportedTypes.includes(ext);
 }
-
-
 
 export async function uploadToCloudinary(file, folder, quality = null) {
   const options = {

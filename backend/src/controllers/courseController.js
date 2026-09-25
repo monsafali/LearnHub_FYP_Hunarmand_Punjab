@@ -1,10 +1,11 @@
 import Course from "../models/Courses.model.js";
 import EnrollmentCourse from "../models/EnrollmentCourse.model.js";
-import UserAuth from "../models/UserAuth.model.js";
 import Lesson from "../models/Lesson.model.js";
+
 
 import { ErrorHandler } from "../middleware/errorMiddleware.js";
 import { catchAsyncErrors } from "../middleware/catchAsyncErrors.js";
+
 
 import {
   deleteFromCloudinary,
@@ -196,9 +197,6 @@ export const deleteCourse = catchAsyncErrors(async (req, res, next) => {
     message: "Course and all related lessons deleted successfully",
   });
 });
-// =====================================================
-// CREATE LESSON
-// =====================================================
 
 export const createLesson = catchAsyncErrors(async (req, res, next) => {
   const { courseId } = req.params;
@@ -264,9 +262,6 @@ export const createLesson = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// =====================================================
-// GET COURSE LESSONS
-// =====================================================
 
 export const getCourseLessons = catchAsyncErrors(async (req, res, next) => {
   const { courseId } = req.params;
@@ -291,50 +286,8 @@ export const getCourseLessons = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// =====================================================
-// PUBLISH / UNPUBLISH LESSON
-// =====================================================
 
-export const toggleLessonPublish = catchAsyncErrors(async (req, res, next) => {
-  const { lessonId } = req.params;
 
-  const lesson = await Lesson.findById(lessonId);
-
-  if (!lesson) {
-    return next(new ErrorHandler("Lesson not found", 404));
-  }
-
-  const course = await Course.findById(lesson.course);
-
-  if (!course) {
-    return next(new ErrorHandler("Course not found", 404));
-  }
-
-  // Ownership
-  if (course.trainer.toString() !== req.user._id.toString()) {
-    return next(
-      new ErrorHandler("You are not authorized to modify this lesson", 403),
-    );
-  }
-
-  lesson.isPublished = !lesson.isPublished;
-
-  await lesson.save();
-
-  res.status(200).json({
-    success: true,
-
-    message: lesson.isPublished
-      ? "Lesson published successfully"
-      : "Lesson unpublished successfully",
-
-    lesson,
-  });
-});
-
-// =====================================================
-// GET SINGLE COURSE
-// =====================================================
 
 export const getCourseById = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
@@ -354,9 +307,6 @@ export const getCourseById = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// =====================================================
-// ENROLLED STUDENTS
-// =====================================================
 
 export const EntrolledStudents = catchAsyncErrors(async (req, res, next) => {
   const { courseId } = req.query;
@@ -393,5 +343,9 @@ export const EntrolledStudents = catchAsyncErrors(async (req, res, next) => {
     students: enrollments,
   });
 });
+
+
+
+
 
 

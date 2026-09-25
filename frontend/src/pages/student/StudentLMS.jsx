@@ -4,10 +4,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import toast from "react-hot-toast";
 
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
+
 
 import useStudentStore from "../../store/studentStore";
 
@@ -37,9 +35,10 @@ const StudentLMS = () => {
   }, []);
 
 
+
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
-
 
 
       <main className="flex-1">

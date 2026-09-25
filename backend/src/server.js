@@ -7,12 +7,7 @@ import cors from "cors";
 
 import path from "path";
 
-
 const __dirname = path.resolve();
-
-
-
-
 
 import AuthRoutes from "./routes/auth.routes.js";
 import InstructorRoutes from "./routes/instructor.routes.js";
@@ -25,24 +20,16 @@ import connectDB from "./database/Database.js";
 import { connectCloudinary } from "./utils/cloudinaryConfig.js";
 import { errorMiddleware } from "./middleware/errorMiddleware.js";
 
-
-
-
-
 import { seedSuperAdmin } from "./utils/seed.js";
 
-
-
-
-
-const port = process.env.PORT
+const port = process.env.PORT;
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(
   fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/",
-  })
+  }),
 );
 
 app.use(
@@ -51,27 +38,18 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(cookieParser());
 
-
-
 app.use("/api/auth", AuthRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/course", InstructorRoutes)
-app.use("/api/student", CoursesRoutes)
-
-
-
-
+app.use("/api/course", InstructorRoutes);
+app.use("/api/student", CoursesRoutes);
 
 
 app.use(errorMiddleware);
-
-
-
 
 const startServer = async () => {
   try {
@@ -86,8 +64,5 @@ const startServer = async () => {
     console.error("Startup Error:", error);
   }
 };
-
-
-
 
 startServer();

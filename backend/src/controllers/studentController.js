@@ -2,6 +2,7 @@ import Course from "../models/Courses.model.js";
 import EntrollmentCourse from "../models/EnrollmentCourse.model.js";
 import Lesson from "../models/Lesson.model.js";
 
+
 import { ErrorHandler } from "../middleware/errorMiddleware.js";
 import { catchAsyncErrors } from "../middleware/catchAsyncErrors.js";
 
@@ -162,3 +163,5 @@ export const getMyCourseWithLessons = catchAsyncErrors(
     });
   }
 );
+
+
