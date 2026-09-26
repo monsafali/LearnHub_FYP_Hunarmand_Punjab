@@ -330,16 +330,10 @@ export const createAssignment = catchAsyncErrors(async (req, res, next) => {
 
   const { title, description, totalMarks, dueDate } = req.body;
 
-  // -----------------------------
-  // Validate title
-  // -----------------------------
   if (!title || !title.trim()) {
     return next(new ErrorHandler("Assignment title is required", 400));
   }
 
-  // -----------------------------
-  // Validate total marks
-  // -----------------------------
   if (
     totalMarks === undefined ||
     totalMarks === null ||
@@ -348,18 +342,12 @@ export const createAssignment = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Total marks must be greater than 0", 400));
   }
 
-  // -----------------------------
-  // Find course
-  // -----------------------------
   const course = await Course.findById(courseId);
 
   if (!course) {
     return next(new ErrorHandler("Course not found", 404));
   }
 
-  // -----------------------------
-  // Check instructor ownership
-  // -----------------------------
   if (course.trainer.toString() !== req.user._id.toString()) {
     return next(
       new ErrorHandler(
@@ -369,43 +357,26 @@ export const createAssignment = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
-  // -----------------------------
-  // Check PDF
-  // -----------------------------
   if (!req.files || !req.files.assignment) {
     return next(new ErrorHandler("Assignment PDF is required", 400));
   }
 
   const pdf = req.files.assignment;
 
-  // Optional validation
   if (pdf.mimetype !== "application/pdf") {
     return next(new ErrorHandler("Only PDF files are allowed", 400));
   }
 
-  // -----------------------------
-  // Upload PDF to Cloudinary
-  // -----------------------------
   const result = await uploadToCloudinary(pdf, "lms/assignments");
 
-  // -----------------------------
-  // Create Assignment
-  // -----------------------------
   const assignment = await Assignment.create({
     course: courseId,
-
     title: title.trim(),
-
     description: description?.trim() || "",
-
     pdfUrl: result.secure_url,
-
     pdfPublicId: result.public_id,
-
     totalMarks: Number(totalMarks),
-
     dueDate: dueDate || null,
-
     isPublished: true,
   });
 
@@ -420,55 +391,57 @@ export const getAssignmentSubmissions = catchAsyncErrors(
   async (req, res, next) => {
     const { assignmentId } = req.params;
 
-    // -----------------------------
-    // Find assignment
-    // -----------------------------
     const assignment = await Assignment.findById(assignmentId);
 
     if (!assignment) {
-      return next(new ErrorHandler("Assignment not found", 404));
-    }
-
-    // -----------------------------
-    // Find course
-    // -----------------------------
-    const course = await Course.findById(assignment.course);
-
-    if (!course) {
-      return next(new ErrorHandler("Course not found", 404));
-    }
-
-    // -----------------------------
-    // Check instructor ownership
-    // -----------------------------
-    if (course.trainer.toString() !== req.user._id.toString()) {
       return next(
-        new ErrorHandler("You are not authorized to view submissions", 403),
+        new ErrorHandler("Assignment not found", 404)
       );
     }
 
-    // -----------------------------
-    // Get submissions
-    // -----------------------------
-    const submissions = await AssignmentSubmission.find({
-      assignment: assignmentId,
-    })
-      .populate("student", "fullname username email imageUrl")
-      .populate("assignment", "title totalMarks")
-      .sort({
-        submittedAt: -1,
-      });
+    const course = await Course.findById(assignment.course);
+
+    if (!course) {
+      return next(
+        new ErrorHandler("Course not found", 404)
+      );
+    }
+
+    if (
+      course.trainer.toString() !==
+      req.user._id.toString()
+    ) {
+      return next(
+        new ErrorHandler(
+          "You are not authorized to view submissions",
+          403
+        )
+      );
+    }
+
+    const submissions =
+      await AssignmentSubmission.find({
+        assignment: assignmentId,
+      })
+        .populate(
+          "student",
+          "fullname username email imageUrl"
+        )
+        .populate(
+          "assignment",
+          "title totalMarks"
+        )
+        .sort({
+          submittedAt: -1,
+        });
 
     res.status(200).json({
       success: true,
-
       assignment,
-
       totalSubmissions: submissions.length,
-
       submissions,
     });
-  },
+  }
 );
 
 export const gradeAssignment = catchAsyncErrors(async (req, res, next) => {

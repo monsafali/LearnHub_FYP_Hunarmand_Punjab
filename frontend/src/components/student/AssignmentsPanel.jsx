@@ -1,4 +1,10 @@
-import { CheckCircle2, Download, FileText, UploadCloud } from "lucide-react";
+import {
+  CheckCircle2,
+  Download,
+  FileText,
+  UploadCloud,
+} from "lucide-react";
+
 import {
   formatDate,
   submissionStatusLabel,
@@ -15,7 +21,10 @@ export const AssignmentsPanel = ({
     return (
       <div className="mx-auto max-w-5xl space-y-3 px-5 py-8">
         {[1, 2].map((n) => (
-          <div key={n} className="h-24 animate-pulse rounded-xl bg-gray-100" />
+          <div
+            key={n}
+            className="h-24 animate-pulse rounded-xl bg-gray-100"
+          />
         ))}
       </div>
     );
@@ -24,10 +33,18 @@ export const AssignmentsPanel = ({
   if (assignments.length === 0) {
     return (
       <div className="mx-auto max-w-5xl px-5 py-16 text-center">
-        <FileText size={40} className="mx-auto mb-3 text-gray-300" />
-        <p className="font-medium text-gray-700">No assignments yet</p>
+        <FileText
+          size={40}
+          className="mx-auto mb-3 text-gray-300"
+        />
+
+        <p className="font-medium text-gray-700">
+          No assignments yet
+        </p>
+
         <p className="mt-1 text-sm text-gray-500">
-          Your instructor hasn't published any assignments for this course.
+          Your instructor hasn't published any assignments
+          for this course.
         </p>
       </div>
     );
@@ -36,15 +53,23 @@ export const AssignmentsPanel = ({
   return (
     <div className="mx-auto max-w-5xl space-y-4 px-5 py-8 md:px-8">
       {assignments.map((assignment) => {
-        const status = assignment.mySubmission?.status;
+        // IMPORTANT:
+        // Backend returns `submission`, not `mySubmission`
+        const submission = assignment.submission;
+
+        const status = submission?.status;
 
         return (
-          <div key={assignment._id} className="rounded-xl border bg-white p-5">
+          <div
+            key={assignment._id}
+            className="rounded-xl border bg-white p-5 shadow-sm"
+          >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <h3 className="font-semibold text-gray-900">
                   {assignment.title}
                 </h3>
+
                 <p className="mt-1 text-sm text-gray-500">
                   Due {formatDate(assignment.dueDate)} &middot;{" "}
                   {assignment.totalMarks} marks
@@ -52,7 +77,9 @@ export const AssignmentsPanel = ({
               </div>
 
               <span
-                className={`rounded-full px-2.5 py-1 text-xs font-medium capitalize ring-1 ring-inset ${submissionStatusStyle(status)}`}
+                className={`rounded-full px-2.5 py-1 text-xs font-medium capitalize ring-1 ring-inset ${submissionStatusStyle(
+                  status
+                )}`}
               >
                 {submissionStatusLabel(status)}
               </span>
@@ -65,33 +92,19 @@ export const AssignmentsPanel = ({
             )}
 
             <div className="mt-4 flex flex-wrap gap-2">
+              {/* Instructor's original assignment */}
               <a
                 href={assignment.pdfUrl}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
               >
                 <Download size={15} />
                 Assignment PDF
               </a>
 
-              {status === "graded" ? (
-                <button
-                  onClick={() => onViewResult(assignment)}
-                  className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100"
-                >
-                  <CheckCircle2 size={15} />
-                  View result
-                </button>
-              ) : status === "submitted" ? (
-                <button
-                  onClick={() => onSubmit(assignment)}
-                  className="flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
-                >
-                  <UploadCloud size={15} />
-                  Resubmit
-                </button>
-              ) : (
+              {/* Not submitted yet */}
+              {!submission && (
                 <button
                   onClick={() => onSubmit(assignment)}
                   className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
@@ -99,6 +112,56 @@ export const AssignmentsPanel = ({
                   <UploadCloud size={15} />
                   Submit assignment
                 </button>
+              )}
+
+              {/* Submitted but not graded */}
+              {status === "submitted" && (
+                <>
+                  <button
+                    onClick={() => onSubmit(assignment)}
+                    className="flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  >
+                    <UploadCloud size={15} />
+                    Resubmit
+                  </button>
+
+                  {submission.answerUrl && (
+                    <a
+                      href={submission.answerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                    >
+                      <Download size={15} />
+                      My Answer
+                    </a>
+                  )}
+                </>
+              )}
+
+              {/* Graded */}
+              {status === "graded" && (
+                <>
+                  <button
+                    onClick={() => onViewResult(assignment)}
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100"
+                  >
+                    <CheckCircle2 size={15} />
+                    View result
+                  </button>
+
+                  {submission.answerUrl && (
+                    <a
+                      href={submission.answerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                    >
+                      <Download size={15} />
+                      My Answer
+                    </a>
+                  )}
+                </>
               )}
             </div>
           </div>

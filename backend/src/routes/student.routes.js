@@ -44,6 +44,7 @@ router.get(
   getMyCourseWithLessons,
 );
 
+
 router.get(
   "/course/:courseId",
   isAuthenticated,

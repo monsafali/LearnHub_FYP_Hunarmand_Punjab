@@ -176,9 +176,6 @@ export const getMyCourseAssignments = catchAsyncErrors(
   async (req, res, next) => {
     const { courseId } = req.params;
 
-    // -----------------------------
-    // Check enrollment
-    // -----------------------------
     const enrollment = await EntrollmentCourse.findOne({
       student: req.user._id,
       course: courseId,
@@ -196,9 +193,6 @@ export const getMyCourseAssignments = catchAsyncErrors(
       );
     }
 
-    // -----------------------------
-    // Get assignments
-    // -----------------------------
     const assignments = await Assignment.find({
       course: courseId,
       isPublished: true,
@@ -206,26 +200,19 @@ export const getMyCourseAssignments = catchAsyncErrors(
       createdAt: -1,
     });
 
-    // -----------------------------
-    // Get student's submissions
-    // -----------------------------
     const assignmentIds = assignments.map(
       (assignment) => assignment._id
     );
 
-    const submissions =
-      await AssignmentSubmission.find({
-        assignment: {
-          $in: assignmentIds,
-        },
-        student: req.user._id,
-      });
+    const submissions = await AssignmentSubmission.find({
+      assignment: {
+        $in: assignmentIds,
+      },
+      student: req.user._id,
+    });
 
-    // -----------------------------
-    // Attach submission to assignment
-    // -----------------------------
-    const assignmentsWithSubmission =
-      assignments.map((assignment) => {
+    const assignmentsWithSubmission = assignments.map(
+      (assignment) => {
         const submission = submissions.find(
           (item) =>
             item.assignment.toString() ===
@@ -234,19 +221,17 @@ export const getMyCourseAssignments = catchAsyncErrors(
 
         return {
           ...assignment.toObject(),
-
           submission: submission || null,
         };
-      });
+      }
+    );
 
     res.status(200).json({
       success: true,
-
       assignments: assignmentsWithSubmission,
     });
   }
 );
-
 
 
 export const submitAssignment = catchAsyncErrors(
@@ -292,7 +277,7 @@ export const submitAssignment = catchAsyncErrors(
       );
     }
 
-  
+
     if (!req.files || !req.files.answer) {
       return next(
         new ErrorHandler(
@@ -400,3 +385,4 @@ export const getMyAssignmentResult =
       result: submission,
     });
   });
+

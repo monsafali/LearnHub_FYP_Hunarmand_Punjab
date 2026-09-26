@@ -137,51 +137,93 @@ const useStudentStore = create((set) => ({
     }
   },
 
+
   submitAssignment: async (assignmentId, formData) => {
-    try {
-      set({ submissionLoading: true, error: null });
+  try {
+    set({ submissionLoading: true, error: null });
 
-      const response = await API_BASE_URL.post(
-        `/student/${assignmentId}/submit`,
-        formData,
-      );
+    const response = await API_BASE_URL.post(
+      `/student/${assignmentId}/submit`,
+      formData
+    );
 
-      set((state) => ({
-        assignments: state.assignments.map((assignment) =>
-          assignment._id === assignmentId
-            ? { ...assignment, mySubmission: response.data.submission }
-            : assignment,
-        ),
-        submissionLoading: false,
-      }));
+    set((state) => ({
+      assignments: state.assignments.map((assignment) =>
+        assignment._id === assignmentId
+          ? {
+              ...assignment,
+              submission: response.data.submission,
+            }
+          : assignment
+      ),
+      submissionLoading: false,
+    }));
 
-      return {
-        success: true,
-        submission: response.data.submission,
-        message: response.data.message || "Assignment submitted successfully",
-      };
-    } catch (error) {
-      const message = error.response?.data?.message || "Failed to submit assignment";
-      set({ submissionLoading: false, error: message });
-      return { success: false, message };
-    }
-  },
+    return {
+      success: true,
+      submission: response.data.submission,
+      message:
+        response.data.message ||
+        "Assignment submitted successfully",
+    };
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      "Failed to submit assignment";
 
-  getMyAssignmentResult: async (assignmentId) => {
-    try {
-      set({ resultLoading: true, error: null, assignmentResult: null });
+    set({
+      submissionLoading: false,
+      error: message,
+    });
 
-      const response = await API_BASE_URL.get(`/student/${assignmentId}/result`);
+    return {
+      success: false,
+      message,
+    };
+  }
+},
 
-      set({ assignmentResult: response.data.submission || null, resultLoading: false });
+getMyAssignmentResult: async (assignmentId) => {
+  try {
+    set({
+      resultLoading: true,
+      error: null,
+      assignmentResult: null,
+    });
 
-      return { success: true, submission: response.data.submission };
-    } catch (error) {
-      const message = error.response?.data?.message || "Failed to load result";
-      set({ resultLoading: false, error: message, assignmentResult: null });
-      return { success: false, message };
-    }
-  },
+    const response = await API_BASE_URL.get(
+      `/student/${assignmentId}/result`
+    );
+
+    const result = response.data?.result || null;
+
+    set({
+      assignmentResult: result,
+      resultLoading: false,
+    });
+
+    return {
+      success: true,
+      submission: result,
+    };
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      "Failed to load result";
+
+    set({
+      resultLoading: false,
+      error: message,
+      assignmentResult: null,
+    });
+
+    return {
+      success: false,
+      message,
+    };
+  }
+},
+
 
   clearAssignmentResult: () => set({ assignmentResult: null }),
 }));

@@ -55,9 +55,7 @@ router.get(
   EntrolledStudents,
 );
 
-// =====================================================
-// LESSONS
-// =====================================================
+
 
 router.post(
   "/:courseId/lessons",
@@ -68,9 +66,6 @@ router.post(
 
 router.get("/:courseId/lessons", isAuthenticated, getCourseLessons);
 
-// =====================================================
-// ASSIGNMENTS
-// =====================================================
 
 router.post(
   "/:courseId/assignments",

@@ -48,7 +48,8 @@ export const useCourseAssignments = (courseId) => {
     }
 
     const formData = new FormData();
-    formData.append("file", submissionFile);
+
+    formData.append("answer", submissionFile);
 
     const result = await submitAssignment(activeAssignment._id, formData);
 
