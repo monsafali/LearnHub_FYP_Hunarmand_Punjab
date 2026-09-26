@@ -10,10 +10,6 @@ const useAdminStore = create((set) => ({
   loading: false,
   error: null,
 
-  // =====================================================
-  // GET ANALYTICS
-  // =====================================================
-
   getAnalytics: async () => {
     try {
       set({
@@ -21,9 +17,7 @@ const useAdminStore = create((set) => ({
         error: null,
       });
 
-      const response = await API_BASE_URL.get(
-        "/admin/analytics"
-      );
+      const response = await API_BASE_URL.get("/admin/analytics");
 
       set({
         analytics: response.data.analytics,
@@ -36,8 +30,7 @@ const useAdminStore = create((set) => ({
       };
     } catch (error) {
       const message =
-        error.response?.data?.message ||
-        "Failed to load analytics";
+        error.response?.data?.message || "Failed to load analytics";
 
       set({
         loading: false,
@@ -50,11 +43,6 @@ const useAdminStore = create((set) => ({
       };
     }
   },
-
-
-  // =====================================================
-  // GET INSTRUCTORS
-  // =====================================================
 
   getInstructors: async () => {
     try {
@@ -63,9 +51,7 @@ const useAdminStore = create((set) => ({
         error: null,
       });
 
-      const response = await API_BASE_URL.get(
-        "/admin/instructors"
-      );
+      const response = await API_BASE_URL.get("/admin/instructors");
 
       set({
         instructors: response.data.instructors || [],
@@ -74,13 +60,11 @@ const useAdminStore = create((set) => ({
 
       return {
         success: true,
-        instructors:
-          response.data.instructors || [],
+        instructors: response.data.instructors || [],
       };
     } catch (error) {
       const message =
-        error.response?.data?.message ||
-        "Failed to load instructors";
+        error.response?.data?.message || "Failed to load instructors";
 
       set({
         loading: false,
@@ -94,11 +78,6 @@ const useAdminStore = create((set) => ({
     }
   },
 
-
-  // =====================================================
-  // CREATE INSTRUCTOR
-  // =====================================================
-
   createInstructor: async (data) => {
     try {
       set({
@@ -106,17 +85,10 @@ const useAdminStore = create((set) => ({
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.post(
-          "/admin/instructors",
-          data
-        );
+      const response = await API_BASE_URL.post("/admin/instructors", data);
 
       set((state) => ({
-        instructors: [
-          response.data.instructor,
-          ...state.instructors,
-        ],
+        instructors: [response.data.instructor, ...state.instructors],
         loading: false,
       }));
 
@@ -127,8 +99,7 @@ const useAdminStore = create((set) => ({
       };
     } catch (error) {
       const message =
-        error.response?.data?.message ||
-        "Failed to create instructor";
+        error.response?.data?.message || "Failed to create instructor";
 
       set({
         loading: false,
@@ -142,11 +113,6 @@ const useAdminStore = create((set) => ({
     }
   },
 
-
-  // =====================================================
-  // UPDATE INSTRUCTOR
-  // =====================================================
-
   updateInstructor: async (id, data) => {
     try {
       set({
@@ -154,18 +120,11 @@ const useAdminStore = create((set) => ({
         error: null,
       });
 
-      const response =
-        await API_BASE_URL.put(
-          `/admin/instructors/${id}`,
-          data
-        );
+      const response = await API_BASE_URL.put(`/admin/instructors/${id}`, data);
 
       set((state) => ({
-        instructors: state.instructors.map(
-          (instructor) =>
-            instructor._id === id
-              ? response.data.instructor
-              : instructor
+        instructors: state.instructors.map((instructor) =>
+          instructor._id === id ? response.data.instructor : instructor,
         ),
 
         loading: false,
@@ -178,8 +137,7 @@ const useAdminStore = create((set) => ({
       };
     } catch (error) {
       const message =
-        error.response?.data?.message ||
-        "Failed to update instructor";
+        error.response?.data?.message || "Failed to update instructor";
 
       set({
         loading: false,
@@ -193,54 +151,41 @@ const useAdminStore = create((set) => ({
     }
   },
 
+  deleteInstructor: async (id) => {
+    try {
+      set({
+        loading: true,
+        error: null,
+      });
 
-  // =====================================================
-  // TOGGLE INSTRUCTOR STATUS
-  // =====================================================
+      const response = await API_BASE_URL.delete(`/admin/instructor/${id}`);
 
-deleteInstructor: async (id) => {
-  try {
-    set({
-      loading: true,
-      error: null,
-    });
+      set((state) => ({
+        instructors: state.instructors.filter(
+          (instructor) => instructor._id !== id,
+        ),
+        loading: false,
+      }));
 
-    const response = await API_BASE_URL.delete(
-      `/admin/instructor/${id}`
-    );
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to delete instructor";
 
-    set((state) => ({
-      instructors: state.instructors.filter(
-        (instructor) => instructor._id !== id
-      ),
-      loading: false,
-    }));
+      set({
+        loading: false,
+        error: message,
+      });
 
-    return {
-      success: true,
-      message: response.data.message,
-    };
-  } catch (error) {
-    const message =
-      error.response?.data?.message ||
-      "Failed to delete instructor";
-
-    set({
-      loading: false,
-      error: message,
-    });
-
-    return {
-      success: false,
-      message,
-    };
-  }
-},
-
-
-  // =====================================================
-  // GET USERS
-  // =====================================================
+      return {
+        success: false,
+        message,
+      };
+    }
+  },
 
   getUsers: async () => {
     try {
@@ -249,9 +194,7 @@ deleteInstructor: async (id) => {
         error: null,
       });
 
-      const response = await API_BASE_URL.get(
-        "/admin/users"
-      );
+      const response = await API_BASE_URL.get("/admin/users");
 
       set({
         users: response.data.users || [],
@@ -263,9 +206,7 @@ deleteInstructor: async (id) => {
         users: response.data.users || [],
       };
     } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        "Failed to load users";
+      const message = error.response?.data?.message || "Failed to load users";
 
       set({
         loading: false,

@@ -8,6 +8,9 @@ import {
   enrollCourse,
   getEnrolledCourses,
   getMyCourseWithLessons,
+  getMyCourseAssignments,
+  submitAssignment,
+  getMyAssignmentResult,
 } from "../controllers/studentController.js";
 
 import { isAuthenticated, authorizedRole } from "../middleware/isAuth.js";
@@ -41,6 +44,25 @@ router.get(
   getMyCourseWithLessons,
 );
 
+router.get(
+  "/course/:courseId",
+  isAuthenticated,
+  authorizedRole("Student"),
+  getMyCourseAssignments,
+);
 
+router.post(
+  "/:assignmentId/submit",
+  isAuthenticated,
+  authorizedRole("Student"),
+  submitAssignment,
+);
+
+router.get(
+  "/:assignmentId/result",
+  isAuthenticated,
+  authorizedRole("Student"),
+  getMyAssignmentResult,
+);
 
 export default router;

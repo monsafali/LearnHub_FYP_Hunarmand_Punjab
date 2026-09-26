@@ -1,11 +1,8 @@
 import { API_BASE_URL } from "../utils/api";
 
-
-
 // src/store/authStore.js
 
 import { create } from "zustand";
-
 
 const useAuthStore = create((set, get) => ({
   user: null,
@@ -18,10 +15,6 @@ const useAuthStore = create((set, get) => ({
   showOtpModal: false,
   otpPurpose: null,
   otpUsername: "",
-
-  // =========================
-  // LOGIN
-  // =========================
 
   login: async (username, password, role) => {
     try {
@@ -49,25 +42,16 @@ const useAuthStore = create((set, get) => ({
 
       return {
         success: false,
-        message:
-          error.response?.data?.message ||
-          "Login failed",
+        message: error.response?.data?.message || "Login failed",
       };
     }
   },
-
-  // =========================
-  // SIGNUP
-  // =========================
 
   signup: async (formData) => {
     try {
       set({ loading: true });
 
-      const response = await API_BASE_URL.post(
-        "/auth/signup",
-        formData
-      );
+      const response = await API_BASE_URL.post("/auth/signup", formData);
 
       set({
         loading: false,
@@ -78,25 +62,17 @@ const useAuthStore = create((set, get) => ({
 
       return {
         success: true,
-        message:
-          response.data?.message ||
-          "OTP sent successfully",
+        message: response.data?.message || "OTP sent successfully",
       };
     } catch (error) {
       set({ loading: false });
 
       return {
         success: false,
-        message:
-          error.response?.data?.message ||
-          "Signup failed",
+        message: error.response?.data?.message || "Signup failed",
       };
     }
   },
-
-  // =========================
-  // VERIFY LOGIN/SIGNUP OTP
-  // =========================
 
   verifyOtp: async (otp) => {
     try {
@@ -104,13 +80,10 @@ const useAuthStore = create((set, get) => ({
 
       const username = get().otpUsername;
 
-      const response = await API_BASE_URL.post(
-        "/auth/verifyotp",
-        {
-          username,
-          otp,
-        }
-      );
+      const response = await API_BASE_URL.post("/auth/verifyotp", {
+        username,
+        otp,
+      });
 
       set({
         user: response.data.user,
@@ -123,33 +96,23 @@ const useAuthStore = create((set, get) => ({
       return {
         success: true,
         user: response.data.user,
-        message:
-          response.data?.message ||
-          "OTP verified successfully",
+        message: response.data?.message || "OTP verified successfully",
       };
     } catch (error) {
       set({ otpLoading: false });
 
       return {
         success: false,
-        message:
-          error.response?.data?.message ||
-          "Invalid OTP",
+        message: error.response?.data?.message || "Invalid OTP",
       };
     }
   },
-
-  // =========================
-  // CHECK AUTH
-  // =========================
 
   checkAuth: async () => {
     try {
       set({ checkingAuth: true });
 
-      const response = await API_BASE_URL.get(
-        "/auth/Getme"
-      );
+      const response = await API_BASE_URL.get("/auth/Getme");
 
       set({
         user: response.data.user,
@@ -158,7 +121,7 @@ const useAuthStore = create((set, get) => ({
     } catch (error) {
       console.log(
         "GetMe error:",
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
 
       set({
@@ -168,168 +131,112 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
-  // =========================
-  // FORGOT PASSWORD
-  // =========================
-
   forgotPassword: async (email) => {
     try {
       set({ loading: true });
 
-      const response = await API_BASE_URL.post(
-        "/auth/forgotPassword",
-        {
-          email,
-        }
-      );
+      const response = await API_BASE_URL.post("/auth/forgotPassword", {
+        email,
+      });
 
       set({ loading: false });
 
       return {
         success: true,
-        message:
-          response.data?.message ||
-          "OTP sent to your email",
+        message: response.data?.message || "OTP sent to your email",
       };
     } catch (error) {
       set({ loading: false });
 
       return {
         success: false,
-        message:
-          error.response?.data?.message ||
-          "Failed to send OTP",
+        message: error.response?.data?.message || "Failed to send OTP",
       };
     }
   },
 
-  // =========================
-  // RESET PASSWORD
-  // =========================
-
-  resetPassword: async ({
-    email,
-    otp,
-    newPassword,
-    confirmPassword,
-  }) => {
+  resetPassword: async ({ email, otp, newPassword, confirmPassword }) => {
     try {
       set({ loading: true });
 
-      const response = await API_BASE_URL.put(
-        "/auth/resetPassword",
-        {
-          email,
-          otp,
-          newPassword,
-          confirmPassword,
-        }
-      );
+      const response = await API_BASE_URL.put("/auth/resetPassword", {
+        email,
+        otp,
+        newPassword,
+        confirmPassword,
+      });
 
       set({ loading: false });
 
       return {
         success: true,
-        message:
-          response.data?.message ||
-          "Password reset successfully",
+        message: response.data?.message || "Password reset successfully",
       };
     } catch (error) {
       set({ loading: false });
 
       return {
         success: false,
-        message:
-          error.response?.data?.message ||
-          "Failed to reset password",
+        message: error.response?.data?.message || "Failed to reset password",
       };
     }
   },
 
-  // =========================
-  // UPDATE PASSWORD
-  // =========================
-
-  updatePassword: async ({
-    oldPassword,
-    newPassword,
-  }) => {
+  updatePassword: async ({ oldPassword, newPassword }) => {
     try {
       set({ loading: true });
 
-      const response = await API_BASE_URL.put(
-        "/auth/updatePassword",
-        {
-          oldPassword,
-          newPassword,
-        }
-      );
+      const response = await API_BASE_URL.put("/auth/updatePassword", {
+        oldPassword,
+        newPassword,
+      });
 
       set({ loading: false });
 
       return {
         success: true,
-        message:
-          response.data?.message ||
-          "Password updated successfully",
+        message: response.data?.message || "Password updated successfully",
       };
     } catch (error) {
       set({ loading: false });
 
       return {
         success: false,
-        message:
-          error.response?.data?.message ||
-          "Failed to update password",
+        message: error.response?.data?.message || "Failed to update password",
       };
     }
   },
 
-  // =========================
-  // UPDATE PROFILE
-  // =========================
+  updateProfile: async (formData) => {
+    try {
+      set({ loading: true });
 
-updateProfile: async (formData) => {
-  try {
-    set({ loading: true });
+      const response = await API_BASE_URL.put("/auth/updateProfile", formData);
 
-    const response = await API_BASE_URL.put(
-      "/auth/updateProfile",
-      formData
-    );
+      set({
+        loading: false,
+        user: response.data.user,
+      });
 
-    set({
-      loading: false,
-      user: response.data.user,
-    });
+      return {
+        success: true,
+        user: response.data.user,
+        message: response.data?.message || "Profile updated successfully",
+      };
+    } catch (error) {
+      console.log(
+        "Update profile error:",
+        error.response?.data || error.message,
+      );
 
-    return {
-      success: true,
-      user: response.data.user,
-      message:
-        response.data?.message ||
-        "Profile updated successfully",
-    };
-  } catch (error) {
-    console.log(
-      "Update profile error:",
-      error.response?.data || error.message
-    );
+      set({ loading: false });
 
-    set({ loading: false });
-
-    return {
-      success: false,
-      message:
-        error.response?.data?.message ||
-        "Failed to update profile",
-    };
-  }
-},
-
-  // =========================
-  // LOGOUT
-  // =========================
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to update profile",
+      };
+    }
+  },
 
   logout: async () => {
     try {
@@ -345,10 +252,6 @@ updateProfile: async (formData) => {
       });
     }
   },
-
-  // =========================
-  // CLOSE OTP
-  // =========================
 
   closeOtpModal: () => {
     set({

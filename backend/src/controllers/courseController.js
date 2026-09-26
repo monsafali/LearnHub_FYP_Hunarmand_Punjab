@@ -1,11 +1,10 @@
 import Course from "../models/Courses.model.js";
 import EnrollmentCourse from "../models/EnrollmentCourse.model.js";
 import Lesson from "../models/Lesson.model.js";
-
-
+import Assignment from "../models/assignment.model.js";
+import AssignmentSubmission from "../models/assignmentSubmission.model.js";
 import { ErrorHandler } from "../middleware/errorMiddleware.js";
 import { catchAsyncErrors } from "../middleware/catchAsyncErrors.js";
-
 
 import {
   deleteFromCloudinary,
@@ -136,10 +135,6 @@ export const updateCourse = catchAsyncErrors(async (req, res, next) => {
 // DELETE COURSE
 // =====================================================
 
-
-
-
-
 export const deleteCourse = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
 
@@ -152,10 +147,7 @@ export const deleteCourse = catchAsyncErrors(async (req, res, next) => {
   // Instructor ownership
   if (course.trainer.toString() !== req.user._id.toString()) {
     return next(
-      new ErrorHandler(
-        "You are not authorized to delete this course",
-        403
-      )
+      new ErrorHandler("You are not authorized to delete this course", 403),
     );
   }
 
@@ -164,8 +156,6 @@ export const deleteCourse = catchAsyncErrors(async (req, res, next) => {
     course: id,
     status: "active",
   });
-
-
 
   // Find all lessons
   const lessons = await Lesson.find({
@@ -201,7 +191,7 @@ export const deleteCourse = catchAsyncErrors(async (req, res, next) => {
 export const createLesson = catchAsyncErrors(async (req, res, next) => {
   const { courseId } = req.params;
 
-  const { title, description, duration, order } = req.body;
+  const { title } = req.body;
 
   // Check title
   if (!title || !title.trim()) {
@@ -241,15 +231,9 @@ export const createLesson = catchAsyncErrors(async (req, res, next) => {
 
     title: title.trim(),
 
-    description: description?.trim() || "",
-
     videoUrl: result.secure_url,
 
     videoPublicId: result.public_id,
-
-    duration: Number(duration) || 0,
-
-    order: Number(order) || 0,
 
     // Instructor can publish later
     isPublished: true,
@@ -261,7 +245,6 @@ export const createLesson = catchAsyncErrors(async (req, res, next) => {
     lesson,
   });
 });
-
 
 export const getCourseLessons = catchAsyncErrors(async (req, res, next) => {
   const { courseId } = req.params;
@@ -286,9 +269,6 @@ export const getCourseLessons = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-
-
-
 export const getCourseById = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
 
@@ -306,7 +286,6 @@ export const getCourseById = catchAsyncErrors(async (req, res, next) => {
     course,
   });
 });
-
 
 export const EntrolledStudents = catchAsyncErrors(async (req, res, next) => {
   const { courseId } = req.query;
@@ -346,6 +325,261 @@ export const EntrolledStudents = catchAsyncErrors(async (req, res, next) => {
 
 
 
+export const createAssignment = catchAsyncErrors(async (req, res, next) => {
+  const { courseId } = req.params;
 
+  const { title, description, totalMarks, dueDate } = req.body;
 
+  // -----------------------------
+  // Validate title
+  // -----------------------------
+  if (!title || !title.trim()) {
+    return next(new ErrorHandler("Assignment title is required", 400));
+  }
 
+  // -----------------------------
+  // Validate total marks
+  // -----------------------------
+  if (
+    totalMarks === undefined ||
+    totalMarks === null ||
+    Number(totalMarks) <= 0
+  ) {
+    return next(new ErrorHandler("Total marks must be greater than 0", 400));
+  }
+
+  // -----------------------------
+  // Find course
+  // -----------------------------
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    return next(new ErrorHandler("Course not found", 404));
+  }
+
+  // -----------------------------
+  // Check instructor ownership
+  // -----------------------------
+  if (course.trainer.toString() !== req.user._id.toString()) {
+    return next(
+      new ErrorHandler(
+        "You are not authorized to add assignments to this course",
+        403,
+      ),
+    );
+  }
+
+  // -----------------------------
+  // Check PDF
+  // -----------------------------
+  if (!req.files || !req.files.assignment) {
+    return next(new ErrorHandler("Assignment PDF is required", 400));
+  }
+
+  const pdf = req.files.assignment;
+
+  // Optional validation
+  if (pdf.mimetype !== "application/pdf") {
+    return next(new ErrorHandler("Only PDF files are allowed", 400));
+  }
+
+  // -----------------------------
+  // Upload PDF to Cloudinary
+  // -----------------------------
+  const result = await uploadToCloudinary(pdf, "lms/assignments");
+
+  // -----------------------------
+  // Create Assignment
+  // -----------------------------
+  const assignment = await Assignment.create({
+    course: courseId,
+
+    title: title.trim(),
+
+    description: description?.trim() || "",
+
+    pdfUrl: result.secure_url,
+
+    pdfPublicId: result.public_id,
+
+    totalMarks: Number(totalMarks),
+
+    dueDate: dueDate || null,
+
+    isPublished: true,
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Assignment created successfully",
+    assignment,
+  });
+});
+
+export const getAssignmentSubmissions = catchAsyncErrors(
+  async (req, res, next) => {
+    const { assignmentId } = req.params;
+
+    // -----------------------------
+    // Find assignment
+    // -----------------------------
+    const assignment = await Assignment.findById(assignmentId);
+
+    if (!assignment) {
+      return next(new ErrorHandler("Assignment not found", 404));
+    }
+
+    // -----------------------------
+    // Find course
+    // -----------------------------
+    const course = await Course.findById(assignment.course);
+
+    if (!course) {
+      return next(new ErrorHandler("Course not found", 404));
+    }
+
+    // -----------------------------
+    // Check instructor ownership
+    // -----------------------------
+    if (course.trainer.toString() !== req.user._id.toString()) {
+      return next(
+        new ErrorHandler("You are not authorized to view submissions", 403),
+      );
+    }
+
+    // -----------------------------
+    // Get submissions
+    // -----------------------------
+    const submissions = await AssignmentSubmission.find({
+      assignment: assignmentId,
+    })
+      .populate("student", "fullname username email imageUrl")
+      .populate("assignment", "title totalMarks")
+      .sort({
+        submittedAt: -1,
+      });
+
+    res.status(200).json({
+      success: true,
+
+      assignment,
+
+      totalSubmissions: submissions.length,
+
+      submissions,
+    });
+  },
+);
+
+export const gradeAssignment = catchAsyncErrors(async (req, res, next) => {
+  const { submissionId } = req.params;
+
+  const { marks, feedback } = req.body;
+
+  // -----------------------------
+  // Validate marks
+  // -----------------------------
+  if (marks === undefined || marks === null || marks === "") {
+    return next(new ErrorHandler("Marks are required", 400));
+  }
+
+  // -----------------------------
+  // Find submission
+  // -----------------------------
+  const submission =
+    await AssignmentSubmission.findById(submissionId).populate("assignment");
+
+  if (!submission) {
+    return next(new ErrorHandler("Submission not found", 404));
+  }
+
+  // -----------------------------
+  // Find course
+  // -----------------------------
+  const course = await Course.findById(submission.assignment.course);
+
+  if (!course) {
+    return next(new ErrorHandler("Course not found", 404));
+  }
+
+  // -----------------------------
+  // Check instructor
+  // -----------------------------
+  if (course.trainer.toString() !== req.user._id.toString()) {
+    return next(
+      new ErrorHandler("You are not authorized to grade this assignment", 403),
+    );
+  }
+
+  const numericMarks = Number(marks);
+
+  // -----------------------------
+  // Validate marks range
+  // -----------------------------
+  if (numericMarks < 0) {
+    return next(new ErrorHandler("Marks cannot be negative", 400));
+  }
+
+  if (numericMarks > submission.assignment.totalMarks) {
+    return next(
+      new ErrorHandler(
+        `Marks cannot be greater than ${submission.assignment.totalMarks}`,
+        400,
+      ),
+    );
+  }
+
+  // -----------------------------
+  // Update submission
+  // -----------------------------
+  submission.marks = numericMarks;
+
+  submission.feedback = feedback?.trim() || "";
+
+  submission.status = "graded";
+
+  submission.gradedAt = new Date();
+
+  await submission.save();
+
+  res.status(200).json({
+    success: true,
+
+    message: "Assignment graded successfully",
+
+    submission,
+  });
+});
+
+export const getInstructorAssignments = catchAsyncErrors(
+  async (req, res, next) => {
+    const { courseId } = req.params;
+
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return next(new ErrorHandler("Course not found", 404));
+    }
+
+    if (course.trainer.toString() !== req.user._id.toString()) {
+      return next(
+        new ErrorHandler(
+          "You are not authorized to view these assignments",
+          403,
+        ),
+      );
+    }
+
+    const assignments = await Assignment.find({
+      course: courseId,
+    }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json({
+      success: true,
+
+      assignments,
+    });
+  },
+);

@@ -83,19 +83,12 @@ const AdminDashboard = () => {
     bio: "",
   });
 
-  // =====================================================
-  // INITIAL DATA
-  // =====================================================
 
   useEffect(() => {
     getAnalytics();
     getInstructors();
     getUsers();
   }, []);
-
-  // =====================================================
-  // CREATE INSTRUCTOR
-  // =====================================================
 
   const handleCreateInstructor = async (e) => {
     e.preventDefault();
@@ -127,9 +120,6 @@ const AdminDashboard = () => {
     getAnalytics();
   };
 
-  // =====================================================
-  // OPEN EDIT MODAL
-  // =====================================================
 
   const openEditModal = (instructor) => {
     setSelectedInstructor(instructor);
@@ -150,9 +140,6 @@ const AdminDashboard = () => {
     setShowEditModal(true);
   };
 
-  // =====================================================
-  // UPDATE INSTRUCTOR
-  // =====================================================
 
   const handleUpdateInstructor = async (e) => {
     e.preventDefault();
@@ -170,9 +157,6 @@ const AdminDashboard = () => {
     setSelectedInstructor(null);
   };
 
-  // =====================================================
-  // ACTIVATE / DEACTIVATE
-  // =====================================================
 
   const DeleteInstructor = async (id) => {
     const result = await deleteInstructor(id);
@@ -185,9 +169,6 @@ const AdminDashboard = () => {
     toast.success(result.message);
   };
 
-  // =====================================================
-  // FILTER USERS
-  // =====================================================
 
   const filteredUsers = users.filter((item) => {
     const value = search.toLowerCase();
@@ -262,7 +243,7 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* Sidebar */}
+
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-gray-900 text-white transition-transform lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -329,13 +310,10 @@ const AdminDashboard = () => {
             </p>
           </div>
 
-        
+
         </header>
 
         <div className="p-4 md:p-8">
-          {/* ================================================= */}
-          {/* DASHBOARD */}
-          {/* ================================================= */}
 
           {activeTab === "dashboard" && (
             <>
@@ -529,10 +507,6 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/* ================================================= */}
-              {/* USER STATUS */}
-              {/* ================================================= */}
-
               <div className="mt-6 rounded-xl bg-white p-6 shadow-sm">
                 <div className="mb-6 flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600">
@@ -642,9 +616,6 @@ const AdminDashboard = () => {
             </>
           )}
 
-          {/* ================================================= */}
-          {/* INSTRUCTORS */}
-          {/* ================================================= */}
 
           {activeTab === "instructors" && (
             <>
@@ -765,10 +736,6 @@ const AdminDashboard = () => {
             </>
           )}
 
-          {/* ================================================= */}
-          {/* USERS */}
-          {/* ================================================= */}
-
           {activeTab === "users" && (
             <>
               <div className="mb-6">
@@ -864,9 +831,6 @@ const AdminDashboard = () => {
         </div>
       </main>
 
-      {/* ================================================= */}
-      {/* CREATE INSTRUCTOR MODAL */}
-      {/* ================================================= */}
 
       {showCreateModal && (
         <Modal
@@ -942,9 +906,7 @@ const AdminDashboard = () => {
         </Modal>
       )}
 
-      {/* ================================================= */}
-      {/* EDIT INSTRUCTOR MODAL */}
-      {/* ================================================= */}
+
 
       {showEditModal && (
         <Modal
@@ -1072,9 +1034,6 @@ const AdminDashboard = () => {
   );
 };
 
-// =====================================================
-// SIDEBAR BUTTON
-// =====================================================
 
 const SidebarButton = ({ icon, text, active, onClick }) => {
   return (
@@ -1092,9 +1051,7 @@ const SidebarButton = ({ icon, text, active, onClick }) => {
   );
 };
 
-// =====================================================
-// STAT CARD
-// =====================================================
+
 
 const StatCard = ({ title, value, icon }) => {
   return (
@@ -1114,10 +1071,6 @@ const StatCard = ({ title, value, icon }) => {
   );
 };
 
-// =====================================================
-// INPUT
-// =====================================================
-
 const Input = ({ label, type = "text", value, onChange }) => {
   return (
     <div>
@@ -1136,9 +1089,6 @@ const Input = ({ label, type = "text", value, onChange }) => {
   );
 };
 
-// =====================================================
-// MODAL
-// =====================================================
 
 const Modal = ({ title, onClose, children }) => {
   return (

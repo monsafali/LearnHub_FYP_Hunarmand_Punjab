@@ -14,11 +14,6 @@ const lessonSchema = new mongoose.Schema(
       trim: true,
     },
 
-    description: {
-      type: String,
-      default: "",
-    },
-
     videoUrl: {
       type: String,
       required: true,
@@ -32,18 +27,6 @@ const lessonSchema = new mongoose.Schema(
     thumbnailUrl: {
       type: String,
       default: null,
-    },
-
-    duration: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
-    order: {
-      type: Number,
-      default: 0,
-      min: 0,
     },
 
     isPublished: {
