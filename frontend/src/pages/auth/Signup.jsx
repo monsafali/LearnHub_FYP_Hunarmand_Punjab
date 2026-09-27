@@ -6,11 +6,13 @@ import OtpModal from "../../components/OtpModal";
 
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-
+import { Eye, EyeOff } from "lucide-react";
 const Signup = () => {
   const signup = useAuthStore((state) => state.signup);
 
   const loading = useAuthStore((state) => state.loading);
+const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     fullname: "",
@@ -83,13 +85,13 @@ const Signup = () => {
     {/* SIGNUP CONTENT */}
     {/* ================================================= */}
 
-    <div className="relative z-10 min-h-screen px-6 py-12">
+    <div className="relative z-10 min-h-screen py-4">
 
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-6xl">
 
         {/* Signup Card - LEFT SIDE */}
 
-        <div className="w-full max-w-lg rounded-2xl bg-white/95 p-8 shadow-2xl backdrop-blur-sm sm:p-10">
+        <div className="w-full max-w-lg rounded-2xl bg-white/95 shadow-2xl backdrop-blur-sm sm:p-10">
 
           {/* Heading */}
 
@@ -104,7 +106,7 @@ const Signup = () => {
           {/* Error */}
 
           {error && (
-            <div className="mt-5 rounded-lg bg-red-100 p-3 text-red-600">
+            <div className="mt-2 rounded-lg bg-red-100 p-3 text-red-600">
               {error}
             </div>
           )}
@@ -113,7 +115,8 @@ const Signup = () => {
 
           <form
             onSubmit={handleSubmit}
-            className="mt-6 space-y-4"
+                className="mt-2 space-y-2"
+
           >
 
             {/* Fullname */}
@@ -125,7 +128,7 @@ const Signup = () => {
               onChange={handleChange}
               placeholder="Full name"
               required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
 
             {/* Username */}
@@ -137,7 +140,7 @@ const Signup = () => {
               onChange={handleChange}
               placeholder="Username"
               required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
 
             {/* Email */}
@@ -149,44 +152,63 @@ const Signup = () => {
               onChange={handleChange}
               placeholder="Email"
               required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
 
             {/* Password */}
+{/* Password */}
 
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Password"
-              required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
+<div className="relative">
+  <input
+    type={showPassword ? "text" : "password"}
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+    placeholder="Password"
+    required
+    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pr-12 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+  />
 
-            {/* Confirm Password */}
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+    aria-label={showPassword ? "Hide password" : "Show password"}
+  >
+    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+  </button>
+</div>
 
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm password"
-              required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
+{/* Confirm Password */}
 
-            {/* Account Type */}
+<div className="relative">
+  <input
+    type={showConfirmPassword ? "text" : "password"}
+    name="confirmPassword"
+    value={formData.confirmPassword}
+    onChange={handleChange}
+    placeholder="Confirm password"
+    required
+    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pr-12 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+  />
 
-            <div className="rounded-lg bg-gray-100 p-3">
-              <p className="text-sm text-gray-500">
-                Account Type
-              </p>
-
-              <p className="font-semibold text-gray-900">
-                Student
-              </p>
-            </div>
+  <button
+    type="button"
+    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+    aria-label={
+      showConfirmPassword
+        ? "Hide confirm password"
+        : "Show confirm password"
+    }
+  >
+    {showConfirmPassword ? (
+      <EyeOff size={20} />
+    ) : (
+      <Eye size={20} />
+    )}
+  </button>
+</div>
 
             {/* Create Account */}
 
