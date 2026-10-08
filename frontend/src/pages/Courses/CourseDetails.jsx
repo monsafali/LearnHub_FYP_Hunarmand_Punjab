@@ -161,7 +161,6 @@ const CourseDetails = () => {
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
 
-      <Navbar />
 
       <section className="bg-gray-700 px-6 py-14 text-white">
 
@@ -189,10 +188,6 @@ const CourseDetails = () => {
               <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl">
                 {course.name}
               </h1>
-
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-gray-300">
-                {course.description}
-              </p>
 
               {/* Trainer Small Info */}
 
@@ -483,7 +478,7 @@ const CourseDetails = () => {
 
       </main>
 
-      <Footer />
+
     </div>
   );
 };
