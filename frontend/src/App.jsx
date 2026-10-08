@@ -17,11 +17,18 @@ import CourseDetails from "./pages/Courses/CourseDetails";
 import Home from "./pages/home/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
+    <>
+       <Navbar/>
+
+
     <Routes>
-      {/* ================= PUBLIC ================= */}
+
+
 
       <Route path="/" element={<Home />} />
       <Route path="/courses/:id" element={<CourseDetails />} />
@@ -39,7 +46,7 @@ const App = () => {
       {/* ================= STUDENT ================= */}
 
       <Route element={<ProtectedRoute allowedRoles={["Student"]} />}>
-        <Route element={<MainLayout />}>
+
           <Route path="/student/lms" element={<StudentLMS />} />
 
           <Route
@@ -47,26 +54,26 @@ const App = () => {
             element={<StudentCourse />}
           />
         </Route>
-      </Route>
+
 
       {/* ================= INSTRUCTOR ================= */}
 
       <Route element={<ProtectedRoute allowedRoles={["Instructor"]} />}>
-        <Route element={<MainLayout />}>
+
           <Route
             path="/instructor/dashboard"
             element={<InstructorDashboard />}
           />
         </Route>
-      </Route>
+
 
       {/* ================= ADMIN ================= */}
 
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-        <Route element={<MainLayout />}>
+
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
-      </Route>
+
 
       {/* ================= PROFILE ================= */}
 
@@ -83,7 +90,12 @@ const App = () => {
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      </Routes>
+
+
+      <Footer/>
+    </>
+
   );
 };
 

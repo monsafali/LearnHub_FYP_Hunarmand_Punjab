@@ -3,9 +3,7 @@ import useAuthStore from "../../store/authStore";
 
 const Profile = () => {
   const user = useAuthStore((state) => state.user);
-  const updateProfile = useAuthStore(
-    (state) => state.updateProfile
-  );
+  const updateProfile = useAuthStore((state) => state.updateProfile);
   const loading = useAuthStore((state) => state.loading);
 
   const [formData, setFormData] = useState({
@@ -115,11 +113,8 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-10">
       <div className="mx-auto max-w-3xl rounded-2xl bg-white p-8 shadow">
-
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">
-            My Profile
-          </h1>
+          <h1 className="text-3xl font-bold">My Profile</h1>
 
           <p className="mt-1 text-gray-500">
             View and update your profile information.
@@ -129,61 +124,39 @@ const Profile = () => {
         {/* Account Information */}
 
         <div className="mb-8 rounded-xl bg-gray-50 p-5">
-          <h2 className="mb-4 text-lg font-semibold">
-            Account Information
-          </h2>
+          <h2 className="mb-4 text-lg font-semibold">Account Information</h2>
 
           <div className="grid gap-4 md:grid-cols-2">
-
             <div>
-              <p className="text-sm text-gray-500">
-                Full Name
-              </p>
+              <p className="text-sm text-gray-500">Full Name</p>
 
-              <p className="font-medium">
-                {user.fullname}
-              </p>
+              <p className="font-medium">{user.fullname}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-500">
-                Username
-              </p>
+              <p className="text-sm text-gray-500">Username</p>
 
-              <p className="font-medium">
-                {user.username}
-              </p>
+              <p className="font-medium">{user.username}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-500">
-                Email
-              </p>
+              <p className="text-sm text-gray-500">Email</p>
 
-              <p className="font-medium">
-                {user.email}
-              </p>
+              <p className="font-medium">{user.email}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-500">
-                Role
-              </p>
+              <p className="text-sm text-gray-500">Role</p>
 
-              <p className="font-medium">
-                {user.role}
-              </p>
+              <p className="font-medium">{user.role}</p>
             </div>
-
           </div>
         </div>
 
         {/* Profile Image */}
 
         <div className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold">
-            Profile Image
-          </h2>
+          <h2 className="mb-4 text-lg font-semibold">Profile Image</h2>
 
           {preview && (
             <img
@@ -200,9 +173,7 @@ const Profile = () => {
             className="w-full rounded-lg border p-3"
           />
 
-          <p className="mt-2 text-sm text-gray-500">
-            JPG, JPEG or PNG only
-          </p>
+          <p className="mt-2 text-sm text-gray-500">JPG, JPEG or PNG only</p>
         </div>
 
         {/* Messages */}
@@ -221,19 +192,12 @@ const Profile = () => {
 
         {/* Profile Form */}
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
-
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid gap-5 md:grid-cols-2">
-
             {/* CNIC */}
 
             <div>
-              <label className="mb-2 block font-medium">
-                CNIC
-              </label>
+              <label className="mb-2 block font-medium">CNIC</label>
 
               <input
                 type="text"
@@ -247,9 +211,7 @@ const Profile = () => {
             {/* District */}
 
             <div>
-              <label className="mb-2 block font-medium">
-                District
-              </label>
+              <label className="mb-2 block font-medium">District</label>
 
               <input
                 type="text"
@@ -263,9 +225,7 @@ const Profile = () => {
             {/* District ID */}
 
             <div>
-              <label className="mb-2 block font-medium">
-                District ID
-              </label>
+              <label className="mb-2 block font-medium">District ID</label>
 
               <input
                 type="text"
@@ -279,9 +239,7 @@ const Profile = () => {
             {/* Tehsil */}
 
             <div>
-              <label className="mb-2 block font-medium">
-                Tehsil
-              </label>
+              <label className="mb-2 block font-medium">Tehsil</label>
 
               <input
                 type="text"
@@ -295,9 +253,7 @@ const Profile = () => {
             {/* Contact */}
 
             <div>
-              <label className="mb-2 block font-medium">
-                Contact Number
-              </label>
+              <label className="mb-2 block font-medium">Contact Number</label>
 
               <input
                 type="text"
@@ -307,15 +263,12 @@ const Profile = () => {
                 className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
           </div>
 
           {/* Address */}
 
           <div>
-            <label className="mb-2 block font-medium">
-              Address
-            </label>
+            <label className="mb-2 block font-medium">Address</label>
 
             <textarea
               name="address"
@@ -329,9 +282,7 @@ const Profile = () => {
           {/* Bio */}
 
           <div>
-            <label className="mb-2 block font-medium">
-              Bio
-            </label>
+            <label className="mb-2 block font-medium">Bio</label>
 
             <textarea
               name="bio"
@@ -347,11 +298,8 @@ const Profile = () => {
             disabled={loading}
             className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading
-              ? "Updating Profile..."
-              : "Update Profile"}
+            {loading ? "Updating Profile..." : "Update Profile"}
           </button>
-
         </form>
       </div>
     </div>

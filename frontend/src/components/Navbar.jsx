@@ -43,7 +43,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className=" sticky top-0 z-50  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+    <nav className=" sticky top-0 z-50  border-b border-gray-200 bg-green-50">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-blue-600">

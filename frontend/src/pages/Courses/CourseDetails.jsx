@@ -41,9 +41,6 @@ const CourseDetails = () => {
     (state) => state.clearSelectedCourse
   );
 
-  // =====================================================
-  // LOAD COURSE
-  // =====================================================
 
   useEffect(() => {
     if (id) {
@@ -59,9 +56,6 @@ const CourseDetails = () => {
     clearSelectedCourse,
   ]);
 
-  // =====================================================
-  // ENROLL
-  // =====================================================
 
   const handleEnroll = async () => {
     if (!course) return;
@@ -102,14 +96,11 @@ const CourseDetails = () => {
     navigate("/student/lms");
   };
 
-  // =====================================================
-  // LOADING
-  // =====================================================
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col bg-gray-50">
-        <Navbar />
+      <div className="flex min-h-screen flex-col bg-gray-100">
+
 
         <main className="flex flex-1 items-center justify-center">
           <div className="text-center">
@@ -128,14 +119,11 @@ const CourseDetails = () => {
     );
   }
 
-  // =====================================================
-  // ERROR / COURSE NOT FOUND
-  // =====================================================
 
   if (error || !course) {
     return (
-      <div className="flex min-h-screen flex-col bg-gray-50">
-        <Navbar />
+      <div className="flex min-h-screen flex-col bg-gray-100">
+
 
         <main className="flex flex-1 items-center justify-center px-6">
           <div className="w-full max-w-lg rounded-2xl border bg-white p-10 text-center shadow-sm">
@@ -175,15 +163,11 @@ const CourseDetails = () => {
 
       <Navbar />
 
-      {/* ================================================= */}
-      {/* COURSE HEADER */}
-      {/* ================================================= */}
-
-      <section className="bg-gray-950 px-6 py-14 text-white">
+      <section className="bg-gray-700 px-6 py-14 text-white">
 
         <div className="mx-auto max-w-7xl">
 
-          {/* Breadcrumb */}
+
 
           <button
             onClick={() => navigate("/")}
@@ -263,10 +247,6 @@ const CourseDetails = () => {
         </div>
 
       </section>
-
-      {/* ================================================= */}
-      {/* COURSE CONTENT */}
-      {/* ================================================= */}
 
       <main className="flex-1 px-6 py-14">
 
@@ -423,9 +403,6 @@ const CourseDetails = () => {
 
             </div>
 
-            {/* ================================================= */}
-            {/* RIGHT - ENROLL CARD */}
-            {/* ================================================= */}
 
             <aside>
 

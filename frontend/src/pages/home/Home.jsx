@@ -92,13 +92,10 @@ const Home = () => {
   return (
 
 <div className="flex min-h-screen flex-col bg-gray-50">
-  <Navbar />
 
-  {/* ================================================= */}
-  {/* HERO VIDEO */}
-  {/* ================================================= */}
- 
-  <section className="relative min-h-[600px] overflow-hidden bg-black">
+
+
+  <section className="relative min-h-[600px] overflow-hidden ">
     {/* Background Video */}
     <video
       autoPlay
@@ -146,11 +143,8 @@ const Home = () => {
     </div>
   </section>
 
-  {/* ================================================= */}
-  {/* ALL COURSES */}
-  {/* ================================================= */}
 
-  <section id="all-courses" className="flex-1 px-6 py-16">
+  <section id="all-courses" className="flex-1 px-6 py-16 bg-gray-100">
     <div className="mx-auto max-w-7xl">
 
       <div className="mb-10">
@@ -312,7 +306,7 @@ const Home = () => {
     </div>
   </section>
 
-  <Footer />
+ 
 </div>
 
 

@@ -84,15 +84,7 @@ const OtpModal = () => {
           We sent a verification code to your email.
         </p>
 
-        <p className="mt-1 text-sm text-gray-500">
-          Username: {otpUsername}
-        </p>
-
-        {otpPurpose === "login" && (
-          <p className="mt-2 text-sm text-blue-600">
-            OTP is required for every login.
-          </p>
-        )}
+        
 
         {otpPurpose === "signup" && (
           <p className="mt-2 text-sm text-green-600">

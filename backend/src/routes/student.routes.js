@@ -29,14 +29,14 @@ router.post(
   enrollCourse,
 );
 
-// Student's enrolled courses
+// Student's all enrolled courses
 router.get(
   "/my-courses",
   isAuthenticated,
   authorizedRole("Student"),
   getEnrolledCourses,
 );
-
+// Student's single enrolled courses
 router.get(
   "/my-courses/:courseId",
   isAuthenticated,

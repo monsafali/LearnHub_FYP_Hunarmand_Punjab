@@ -46,11 +46,8 @@ const Login = () => {
   return (
 
 <>
-  <Navbar />
 
-  {/* ================================================= */}
-  {/* FULL PAGE BACKGROUND VIDEO */}
-  {/* ================================================= */}
+
 
   <div className="relative min-h-screen overflow-hidden">
 
@@ -228,7 +225,6 @@ const Login = () => {
 
   <OtpModal />
 
-  <Footer />
 </>
 
 
