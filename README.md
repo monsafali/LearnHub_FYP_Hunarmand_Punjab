@@ -37,14 +37,12 @@ A full-stack Learning Management System built with the MERN stack to simplify on
 * **Zustand** — State management.
 * **Axios** — API requests.
 * **Tailwind CSS 4** — Utility-first styling.
-* **Material UI (MUI)** — UI components and styling.
 * **Lucide React** — Icons.
 * **React Hook Form** — Form handling and validation.
 * **Recharts** — Charts and data visualization.
 * **React Hot Toast & React Toastify** — Notifications.
 * **Socket.IO Client** — Real-time communication.
-* **Stripe.js** — Frontend payment integration.
-* **React OAuth Google** — Google authentication integration.
+
 
 ### Backend
 
@@ -58,13 +56,7 @@ A full-stack Learning Management System built with the MERN stack to simplify on
 * **Multer & Express File Upload** — File upload handling.
 * **Cloudinary** — Cloud-based media storage.
 * **Socket.IO** — Real-time communication.
-* **Stripe** — Payment processing integration.
-* **OpenAI SDK** — AI-powered functionality.
 * **Nodemailer & Brevo SDK** — Email integration.
-* **Google APIs** — Google service integrations.
-* **PDFKit & pdf-parse** — PDF generation and parsing.
-* **DOCX** — Word document generation.
-* **QRCode & bwip-js** — QR code and barcode generation.
 * **Node-Cron** — Scheduled tasks.
 * **dotenv** — Environment variable management.
 * **Validator** — Data validation.
@@ -121,7 +113,7 @@ Create a `.env` file in the frontend directory and configure the variables requi
 For example, with Vite:
 
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_BACKEND_URLL=http://localhost:5000/api
 ```
 
 Use the actual environment variable names referenced in your frontend code.
@@ -146,10 +138,27 @@ Create a `.env` file in the backend directory.
 Example configuration:
 
 ```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secure_jwt_secret
-CLIENT_URL=http://localhost:5173
+
+MONGO_URI=
+PORT=
+JWT_SECRET_KEY=
+JWT_EXPIRES=
+COOKIE_EXPIRE=
+BREVO_API_KEY
+CLIENT_URL=
+SUPER_ADMIN_NAME=
+SUPER_ADMIN_USERNAME=
+SUPER_ADMIN_PASSWORD=
+SUPER_ADMIN_EMAIL=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_SECRET=
+CLOUDINARY_API_KEY=
+BACKEND_URL=
+SENDER_EMAIL=
+JWT_TIMEOUT=1h
+
+
+
 ```
 
 Add any other environment variables required by your integrations, such as Cloudinary, Stripe, Google OAuth, OpenAI, and email services.
