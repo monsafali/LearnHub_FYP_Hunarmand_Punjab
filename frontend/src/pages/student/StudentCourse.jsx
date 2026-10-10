@@ -11,6 +11,7 @@ import { LecturePanel } from "../../components/student/LecturePanel";
 import { AssignmentsPanel } from "../../components/student/AssignmentsPanel";
 import { SubmitAssignmentModal } from "../../components/student/modals/SubmitAssignmentModal";
 import { AssignmentResultModal } from "../../components/student/modals/AssignmentResultModal";
+import StudentChat from "../../components/student/StudentChat";
 
 const StudentCourse = () => {
   const { courseId } = useParams();
@@ -68,6 +69,8 @@ const StudentCourse = () => {
   if (!selectedCourse) return null;
 
   return (
+    <>
+
     <div className="min-h-screen bg-gray-100">
       <CourseHeader
         course={selectedCourse}
@@ -127,6 +130,14 @@ const StudentCourse = () => {
         />
       )}
     </div>
+
+
+          <div className="mx-auto max-w-7xl">
+            <StudentChat />
+          </div>
+
+
+      </>
   );
 };
 

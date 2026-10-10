@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useStudentStore from "../../store/studentStore";
 
@@ -17,12 +17,16 @@ export const useCourseAssignments = (courseId) => {
 
   const [loaded, setLoaded] = useState(false);
 
-  const loadAssignments = async () => {
+  useEffect(() => {
+    setLoaded(false);
+  }, [courseId]);
+
+  const loadAssignments = useCallback(async () => {
     if (!courseId) return;
     const result = await getMyCourseAssignments(courseId);
     setLoaded(true);
     if (!result.success) toast.error(result.message);
-  };
+  }, [courseId, getMyCourseAssignments]);
 
   // ---------- submit ----------
   const [showSubmitModal, setShowSubmitModal] = useState(false);
