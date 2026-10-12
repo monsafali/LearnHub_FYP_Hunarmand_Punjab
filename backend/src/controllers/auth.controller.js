@@ -200,9 +200,15 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
     user.sessionVersion = 0;
     await user.save();
   }
+  const isProduction = process.env.NODE_ENV === "production";
   res
     .status(200)
-    .cookie("jwt-token", "", { expires: new Date(0), httpOnly: true })
+    .cookie("jwt-token", "", {
+      expires: new Date(0),
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    })
     .json({ success: true, message: "Logged out successfully" });
 });
 
@@ -448,7 +454,6 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     user,
   });
 });
-
 
 
 
