@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../utils/api";
 // The REST base URL ends in `/api`; Socket.IO connects to the server origin
 // and uses its own `/socket.io` transport path, not an `/api` namespace.
 const socketUrl = (() => {
-  const configuredUrl = import.meta.env.VITE_BACKEND_URL;
+  const configuredUrl = import.meta.env.VITE_BACKEND_URL || "/api";
   if (!configuredUrl) return window.location.origin;
 
   try {
