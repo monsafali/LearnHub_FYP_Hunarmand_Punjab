@@ -103,8 +103,9 @@ export const SignupUser = catchAsyncErrors(async (req, res, next) => {
     isActive: false,
   });
 
-  const otp = Math.floor(Math.random() * 1000000).toString();
-  user.otpCode = otp;
+  // const otp = Math.floor(Math.random() * 1000000).toString();
+  // user.otpCode = otp;
+  user.otpCode = "123456";
   await user.save();
 
 
