@@ -40,7 +40,7 @@ const StudentChat = () => {
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4 sm:px-6">
         <div>
           <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700">
@@ -55,8 +55,8 @@ const StudentChat = () => {
         </div>
       </div>
 
-      <div className="grid min-h-[490px] lg:grid-cols-[250px_minmax(0,1fr)_220px]">
-        <aside className="border-b border-slate-200 p-3 lg:border-b-0 lg:border-r">
+      <div className="grid min-h-0 flex-1 lg:grid-cols-[250px_minmax(0,1fr)_220px]">
+        <aside className="min-h-0 overflow-y-auto border-b border-slate-200 p-3 lg:border-b-0 lg:border-r">
           <div className="px-2 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Your course rooms</div>
           {loadingCourses && <p className="px-2 py-4 text-sm text-slate-500">Loading rooms...</p>}
           {!loadingCourses && courses.length === 0 && <p className="px-2 py-4 text-sm text-slate-500">Enroll in a course to join its chat.</p>}
@@ -79,13 +79,13 @@ const StudentChat = () => {
           </div>
         </aside>
 
-        <div className="flex min-h-[410px] flex-col">
+        <div className="flex min-h-0 flex-col overflow-hidden">
           {selectedCourse ? <>
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
               <div><h3 className="font-semibold text-slate-900">{selectedCourse.name}</h3><p className="text-xs text-slate-500">{selectedCourse.category || "Course chat"}</p></div>
               <div className="flex items-center gap-1 text-xs text-slate-500"><Users size={14} /> {members.length}</div>
             </div>
-            <div className="flex-1 space-y-4 overflow-y-auto bg-slate-50/60 p-4 sm:p-5">
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-slate-50/60 p-4 sm:p-5">
               {loadingChat && <div className="py-12 text-center text-sm text-slate-500">Loading conversation...</div>}
               {!loadingChat && messages.length === 0 && <div className="grid h-full min-h-56 place-items-center text-center"><div><div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-indigo-50 text-indigo-600"><MessageCircle size={22} /></div><p className="mt-3 font-semibold text-slate-800">Start the conversation</p><p className="mt-1 text-sm text-slate-500">Say hello to others taking this course.</p></div></div>}
               {messages.map((message) => {
@@ -110,7 +110,7 @@ const StudentChat = () => {
           </> : <div className="grid flex-1 place-items-center p-8 text-center"><div><div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-indigo-50 text-indigo-600"><MessageCircle size={26} /></div><h3 className="mt-4 font-semibold text-slate-900">Choose a course room</h3><p className="mt-1 max-w-xs text-sm text-slate-500">Pick a course to see messages and meet your classmates.</p></div></div>}
         </div>
 
-        <aside className="hidden border-l border-slate-200 p-4 lg:block">
+        <aside className="hidden min-h-0 overflow-y-auto border-l border-slate-200 p-4 lg:block">
           <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700"><Users size={16} /> Classmates <span className="text-xs font-normal text-slate-400">{members.length}</span></div>
           {!selectedCourse && <p className="text-sm text-slate-400">Choose a course to see its students.</p>}
           <div className="space-y-3">

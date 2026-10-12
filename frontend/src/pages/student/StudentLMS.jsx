@@ -87,11 +87,11 @@ const StudentLMS = () => {
     setSidebarOpen(false);
   };
 
-  return <div className="min-h-screen bg-slate-50">
+  return <div className={`${activeView === "chat" ? "h-screen overflow-hidden" : "min-h-screen"} bg-slate-50`}>
     <StudentSidebar activeView={activeView} goTo={goTo} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} courseCount={enrolledCourses.length} />
     {sidebarOpen && <button aria-label="Close navigation" className="fixed inset-0 z-30 bg-slate-950/50 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
-    <div className="min-h-screen lg:pl-72">
+    <div className={`${activeView === "chat" ? "flex h-full min-h-0 flex-col" : "min-h-screen"} lg:pl-72`}>
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 md:px-8">
           <button onClick={() => setSidebarOpen(true)} aria-label="Open navigation" className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"><Menu size={21} /></button>
@@ -106,7 +106,7 @@ const StudentLMS = () => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl p-4 md:p-8">
+      <main className={`${activeView === "chat" ? "flex min-h-0 flex-1 flex-col overflow-hidden" : ""} mx-auto w-full max-w-7xl p-4 md:p-8`}>
         {activeView === "courses" && <>
           <div className="mb-6 flex items-end justify-between gap-4"><div><p className="text-sm font-medium text-indigo-600">Your learning space</p><h2 className="mt-1 text-2xl font-bold text-slate-900">Continue learning</h2></div><div className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600"><BookOpen size={16} className="mr-2 inline" />{enrolledCourses.length} courses</div></div>
           {loadingCourses && <div className="py-20 text-center text-slate-500">Loading your courses...</div>}
