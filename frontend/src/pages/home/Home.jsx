@@ -81,12 +81,7 @@ const Home = () => {
       return;
     }
 
-    toast.success(
-      result.message ||
-        "Successfully enrolled"
-    );
-
-    navigate("/student/lms");
+    navigate(`/checkout/course/${courseId}`);
   };
 
   return (
@@ -316,4 +311,3 @@ const Home = () => {
 };
 
 export default Home;
-

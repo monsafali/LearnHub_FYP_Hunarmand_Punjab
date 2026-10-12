@@ -59,15 +59,25 @@ const useStudentStore = create((set) => ({
 
       set({ loading: false });
 
-      return {
-        success: true,
-        enrollment: response.data.enrollment,
-        message: response.data.message || "Successfully enrolled",
-      };
+      return { success: true, clientSecret: response.data.clientSecret };
     } catch (error) {
       const message = error.response?.data?.message || "Failed to enroll in course";
       set({ loading: false, error: message });
       return { success: false, message };
+    }
+  },
+
+  getCheckoutStatus: async (sessionId) => {
+    try {
+      const response = await API_BASE_URL.get("/student/payments/checkout-status", {
+        params: { session_id: sessionId },
+      });
+      return { success: true, ...response.data };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Could not verify payment yet",
+      };
     }
   },
 

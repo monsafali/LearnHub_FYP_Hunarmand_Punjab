@@ -163,6 +163,12 @@ JWT_TIMEOUT=1h
 
 Add any other environment variables required by your integrations, such as Cloudinary, Stripe, Google OAuth, OpenAI, and email services.
 
+### Stripe course payments
+
+Set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_CURRENCY`, and `CLIENT_URL` in the backend environment. `STRIPE_CURRENCY` defaults to `pkr` to match the rupee prices shown in the UI; confirm the currency is supported for your Stripe account. Course prices are stored in major currency units (for example, `1000` means PKR 1,000) and converted to Stripe's minor units on the server. Configure a Stripe webhook endpoint at `POST /api/payments/stripe-webhook` for `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `checkout.session.expired`. Keep both Stripe keys only on the backend. Enrollments are created only after a signed webhook confirms the exact payment amount and currency. For local development, use Stripe CLI to forward webhook events to your local endpoint and use Stripe test keys/cards.
+
+The course payment form is embedded in the app using Stripe Embedded Checkout. Set `VITE_STRIPE_PUBLISHABLE_KEY` on the frontend (on Vercel, set it for the environment you deploy and redeploy). Set the backend `CLIENT_URL` to `https://learn-hub-fyp-hunarmand-punjab.vercel.app`; set frontend `VITE_BACKEND_URL` to `https://learnhub-fyp-hunarmand-punjab.onrender.com/api`. In Stripe Workbench, create a webhook pointing to `https://learnhub-fyp-hunarmand-punjab.onrender.com/api/payments/stripe-webhook` and subscribe to the three events above. Copy its signing secret to Render as `STRIPE_WEBHOOK_SECRET`. Use matching test or live key modes for the frontend publishable key, backend secret key, and webhook endpoint.
+
 **Important:** The variable names above are examples. Match them to the names actually used in your source code. Never commit real credentials or secret keys to GitHub.
 
 Start the backend:

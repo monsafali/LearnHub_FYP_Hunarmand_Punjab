@@ -108,6 +108,7 @@ import { errorMiddleware } from "./middleware/errorMiddleware.js";
 import { seedSuperAdmin } from "./utils/seed.js";
 
 import { initializeSocket } from "./utils/socket.js";
+import { handleStripeWebhook } from "./controllers/paymentController.js";
 
 const __dirname = path.resolve();
 const port = process.env.PORT || 5000;
@@ -138,6 +139,10 @@ app.use(
     credentials: true,
   })
 );
+
+// Stripe requires the exact raw request body to verify webhook signatures.
+// Register this before express.json() consumes/parses request bodies.
+app.post("/api/payments/stripe-webhook", express.raw({ type: "application/json" }), handleStripeWebhook);
 
 app.use(express.json());
 app.use(cookieParser());

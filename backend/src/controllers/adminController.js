@@ -1,6 +1,7 @@
 import UserAuth from "../models/UserAuth.model.js";
 import Course from "../models/Courses.model.js";
 import EnrollmentCourse from "../models/EnrollmentCourse.model.js";
+import CoursePurchase from "../models/CoursePurchase.model.js";
 
 import { ErrorHandler } from "../middleware/errorMiddleware.js";
 import { catchAsyncErrors } from "../middleware/catchAsyncErrors.js";
@@ -86,6 +87,23 @@ export const CreateInstructor = catchAsyncErrors(
 
 export const getAdminAnalytics = catchAsyncErrors(
   async (req, res, next) => {
+    const period = String(req.query.period || "month");
+    const dateValue = String(req.query.date || new Date().toISOString().slice(0, 10));
+    const periodStart = period === "year"
+      ? /^\d{4}$/.test(dateValue) ? new Date(Date.UTC(Number(dateValue), 0, 1)) : null
+      : period === "month"
+        ? /^\d{4}-(0[1-9]|1[0-2])$/.test(dateValue) ? new Date(`${dateValue}-01T00:00:00.000Z`) : null
+        : period === "day"
+          ? /^\d{4}-\d{2}-\d{2}$/.test(dateValue) ? new Date(`${dateValue}T00:00:00.000Z`) : null
+          : null;
+    if (!periodStart || Number.isNaN(periodStart.getTime()) || (period === "day" && periodStart.toISOString().slice(0, 10) !== dateValue)) {
+      return next(new ErrorHandler("Invalid revenue period or date", 400));
+    }
+    const periodEnd = period === "year"
+      ? new Date(Date.UTC(periodStart.getUTCFullYear() + 1, 0, 1))
+      : period === "month"
+        ? new Date(Date.UTC(periodStart.getUTCFullYear(), periodStart.getUTCMonth() + 1, 1))
+        : new Date(periodStart.getTime() + 24 * 60 * 60 * 1000);
     const [
       totalUsers,
       totalStudents,
@@ -95,6 +113,11 @@ export const getAdminAnalytics = catchAsyncErrors(
       totalEnrollments,
       activeUsers,
       inactiveUsers,
+      revenueByCurrency,
+      currentMonthRevenueByCurrency,
+      paidPurchaseCount,
+      monthlyRevenueTrend,
+      selectedRevenue,
     ] = await Promise.all([
       UserAuth.countDocuments(),
 
@@ -125,6 +148,41 @@ export const getAdminAnalytics = catchAsyncErrors(
           { deactivated: true },
         ],
       }),
+      CoursePurchase.aggregate([
+        { $match: { status: "paid" } },
+        { $group: { _id: "$currency", amount: { $sum: "$amount" } } },
+        { $sort: { _id: 1 } },
+      ]),
+      CoursePurchase.aggregate([
+        { $match: { status: "paid", paidAt: { $gte: new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)) } } },
+        { $group: { _id: "$currency", amount: { $sum: "$amount" } } },
+        { $sort: { _id: 1 } },
+      ]),
+      CoursePurchase.countDocuments({ status: "paid" }),
+      CoursePurchase.aggregate([
+        {
+          $match: {
+            status: "paid",
+            paidAt: { $gte: new Date(new Date().getFullYear(), new Date().getMonth() - 11, 1) },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$paidAt" },
+              month: { $month: "$paidAt" },
+              currency: "$currency",
+            },
+            amount: { $sum: "$amount" },
+          },
+        },
+        { $sort: { "_id.year": 1, "_id.month": 1, "_id.currency": 1 } },
+      ]),
+      CoursePurchase.aggregate([
+        { $match: { status: "paid", paidAt: { $gte: periodStart, $lt: periodEnd } } },
+        { $group: { _id: "$currency", amount: { $sum: "$amount" }, purchases: { $sum: 1 } } },
+        { $sort: { _id: 1 } },
+      ]),
     ]);
 
     res.status(200).json({
@@ -138,6 +196,21 @@ export const getAdminAnalytics = catchAsyncErrors(
         totalEnrollments,
         activeUsers,
         inactiveUsers,
+        paidPurchaseCount,
+        revenueByCurrency: revenueByCurrency.map(({ _id, amount }) => ({ currency: _id, amount })),
+        monthlyRevenueByCurrency: currentMonthRevenueByCurrency.map(({ _id, amount }) => ({ currency: _id, amount })),
+        monthlyRevenueTrend: monthlyRevenueTrend.map(({ _id, amount }) => ({
+          year: _id.year,
+          month: _id.month,
+          currency: _id.currency,
+          amount,
+        })),
+        selectedRevenue: {
+          period,
+          date: dateValue,
+          byCurrency: selectedRevenue.map(({ _id, amount, purchases }) => ({ currency: _id, amount, purchases })),
+          purchaseCount: selectedRevenue.reduce((total, row) => total + row.purchases, 0),
+        },
       },
     });
   }

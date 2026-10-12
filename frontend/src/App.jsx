@@ -19,6 +19,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import PaymentSuccess from "./pages/student/PaymentSuccess";
+import EmbeddedCourseCheckout from "./pages/student/EmbeddedCourseCheckout";
 
 const App = () => {
   return (
@@ -32,6 +34,8 @@ const App = () => {
 
       <Route path="/" element={<Home />} />
       <Route path="/courses/:id" element={<CourseDetails />} />
+      <Route path="/payment/success" element={<PaymentSuccess />} />
+      <Route path="/checkout/course/:courseId" element={<EmbeddedCourseCheckout />} />
 
       <Route path="/login" element={<Login />} />
 

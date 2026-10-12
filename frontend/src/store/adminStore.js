@@ -235,11 +235,11 @@ const useAdminStore = create((set) => ({
   loading: false,
   error: null,
 
-  getAnalytics: async () => {
+  getAnalytics: async (period = "month", date) => {
     try {
       set({ loading: true, error: null });
 
-      const response = await API_BASE_URL.get("/admin/analytics");
+      const response = await API_BASE_URL.get("/admin/analytics", { params: { period, date } });
 
       set({ analytics: response.data.analytics, loading: false });
 

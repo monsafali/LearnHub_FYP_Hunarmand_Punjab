@@ -52,6 +52,7 @@ const AdminDashboard = () => {
           {activeTab === "dashboard" && (
             <DashboardOverview
               analytics={analytics}
+              onRefreshAnalytics={refreshAnalytics}
               onCreateInstructor={() => {
                 setActiveTab("instructors");
                 instructorManager.openCreateModal();

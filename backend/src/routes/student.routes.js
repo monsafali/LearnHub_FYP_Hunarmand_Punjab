@@ -5,13 +5,16 @@ import express from "express";
 import {
   getAllCourses,
   getCourseById,
-  enrollCourse,
   getEnrolledCourses,
   getMyCourseWithLessons,
   getMyCourseAssignments,
   submitAssignment,
   getMyAssignmentResult,
 } from "../controllers/studentController.js";
+import {
+  createCourseCheckoutSession,
+  getCheckoutStatus,
+} from "../controllers/paymentController.js";
 
 import { isAuthenticated, authorizedRole } from "../middleware/isAuth.js";
 
@@ -26,8 +29,10 @@ router.post(
   "/courses/:courseId/enroll",
   isAuthenticated,
   authorizedRole("Student"),
-  enrollCourse,
+  createCourseCheckoutSession,
 );
+
+router.get("/payments/checkout-status", isAuthenticated, authorizedRole("Student"), getCheckoutStatus);
 
 // Student's all enrolled courses
 router.get(

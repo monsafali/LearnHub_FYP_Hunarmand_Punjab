@@ -88,12 +88,7 @@ const CourseDetails = () => {
       return;
     }
 
-    toast.success(
-      result.message ||
-        "Successfully enrolled"
-    );
-
-    navigate("/student/lms");
+    navigate(`/checkout/course/${course._id}`);
   };
 
 
@@ -484,4 +479,3 @@ const CourseDetails = () => {
 };
 
 export default CourseDetails;
-
