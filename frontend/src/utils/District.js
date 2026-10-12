@@ -389,7 +389,3 @@ const PUNJAB = [
 ];
 
 export default PUNJAB;
-
-
-
-

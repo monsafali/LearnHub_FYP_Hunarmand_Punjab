@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useAuthStore from "../../store/authStore";
+import PUNJAB from "../../utils/District";
 
 const Profile = () => {
   const user = useAuthStore((state) => state.user);
@@ -22,6 +23,10 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const selectedDistrict = PUNJAB.find(
+    (district) => district.districtId === formData.districtId,
+  );
+
   // Load current user data
   useEffect(() => {
     if (!user) return;
@@ -39,6 +44,31 @@ const Profile = () => {
     // Your backend uses `image`
     setPreview(user.imageUrl || "");
   }, [user]);
+
+  useEffect(() => {
+    const district = PUNJAB.find(
+      (item) => item.districtId === formData.districtId,
+    );
+
+    setFormData((prev) => {
+      const tehsilIsValid = district?.tehsils.some(
+        (item) => item.tehsilName === prev.tehsil,
+      );
+
+      if (
+        prev.district === (district?.districtName || "") &&
+        (tehsilIsValid || !prev.tehsil)
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        district: district?.districtName || "",
+        tehsil: tehsilIsValid ? prev.tehsil : "",
+      };
+    });
+  }, [formData.districtId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -213,27 +243,19 @@ const Profile = () => {
             <div>
               <label className="mb-2 block font-medium">District</label>
 
-              <input
-                type="text"
-                name="district"
-                value={formData.district}
-                onChange={handleChange}
-                className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* District ID */}
-
-            <div>
-              <label className="mb-2 block font-medium">District ID</label>
-
-              <input
-                type="text"
+              <select
                 name="districtId"
                 value={formData.districtId}
                 onChange={handleChange}
                 className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              >
+                <option value="">Select district</option>
+                {PUNJAB.map((district) => (
+                  <option key={district.districtId} value={district.districtId}>
+                    {district.districtName}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Tehsil */}
@@ -241,13 +263,20 @@ const Profile = () => {
             <div>
               <label className="mb-2 block font-medium">Tehsil</label>
 
-              <input
-                type="text"
+              <select
                 name="tehsil"
                 value={formData.tehsil}
                 onChange={handleChange}
+                disabled={!selectedDistrict}
                 className="w-full rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              >
+                <option value="">Select tehsil</option>
+                {selectedDistrict?.tehsils.map((tehsil) => (
+                  <option key={tehsil.tehsilId} value={tehsil.tehsilName}>
+                    {tehsil.tehsilName}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Contact */}
@@ -307,3 +336,8 @@ const Profile = () => {
 };
 
 export default Profile;
+
+
+
+
+

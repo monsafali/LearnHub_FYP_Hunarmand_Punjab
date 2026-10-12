@@ -40,7 +40,7 @@ export const initializeSocket = (httpServer, allowedOrigins) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
       const user = await UserAuth.findById(decoded.userId).select(
-        "role fullname username imageUrl sessionVersion singleDeviceEnforced"
+        "role fullname username imageUrl sessionVersion singleDeviceEnforced",
       );
 
       if (!user || user.role !== "Student") {
@@ -65,34 +65,34 @@ export const initializeSocket = (httpServer, allowedOrigins) => {
   io.on("connection", (socket) => {
     console.log("Student connected:", socket.id);
 
-    socket.on("chat:join", async ({ courseId } = {}, acknowledge = () => {}) => {
-      try {
-        await assertCourseChatAccess(socket.data.user._id, courseId);
+    socket.on(
+      "chat:join",
+      async ({ courseId } = {}, acknowledge = () => {}) => {
+        try {
+          await assertCourseChatAccess(socket.data.user._id, courseId);
 
-        const room = `course:${courseId}`;
+          const room = `course:${courseId}`;
 
-        for (const joinedRoom of socket.rooms) {
-          if (
-            joinedRoom.startsWith("course:") &&
-            joinedRoom !== room
-          ) {
-            socket.leave(joinedRoom);
+          for (const joinedRoom of socket.rooms) {
+            if (joinedRoom.startsWith("course:") && joinedRoom !== room) {
+              socket.leave(joinedRoom);
+            }
           }
+
+          socket.join(room);
+
+          acknowledge({
+            success: true,
+            courseId,
+          });
+        } catch (error) {
+          acknowledge({
+            success: false,
+            message: error.message || "Unable to join this course chat",
+          });
         }
-
-        socket.join(room);
-
-        acknowledge({
-          success: true,
-          courseId,
-        });
-      } catch (error) {
-        acknowledge({
-          success: false,
-          message: error.message || "Unable to join this course chat",
-        });
-      }
-    });
+      },
+    );
 
     socket.on("chat:leave", ({ courseId } = {}) => {
       if (courseId) {
@@ -122,7 +122,7 @@ export const initializeSocket = (httpServer, allowedOrigins) => {
             message: error.message || "Unable to send message",
           });
         }
-      }
+      },
     );
 
     socket.on("disconnect", (reason) => {

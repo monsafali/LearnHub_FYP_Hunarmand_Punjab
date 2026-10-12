@@ -140,8 +140,7 @@ app.use(
   })
 );
 
-// Stripe requires the exact raw request body to verify webhook signatures.
-// Register this before express.json() consumes/parses request bodies.
+
 app.post("/api/payments/stripe-webhook", express.raw({ type: "application/json" }), handleStripeWebhook);
 
 app.use(express.json());
@@ -167,7 +166,7 @@ const startServer = async () => {
 
     await seedSuperAdmin();
 
-    await connectCloudinary();
+    connectCloudinary();
 
     httpServer.listen(port, () => {
       console.log(`Server is running on port ${port}`);
@@ -180,4 +179,4 @@ const startServer = async () => {
 
 startServer();
 
-export { app, httpServer };
+// export { app, httpServer };
