@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { BookOpen, GraduationCap, ShieldCheck, UserPlus, Users, Wallet, CreditCard } from "lucide-react";
+import {
+  BookOpen,
+  GraduationCap,
+  ShieldCheck,
+  UserPlus,
+  Users,
+  Wallet,
+  CreditCard,
+} from "lucide-react";
 
 import { StatCard } from "./StatCard";
 import { PlatformOverviewChart } from "./charts/PlatformOverviewChart";
@@ -15,11 +23,17 @@ import {
 const getRevenueDate = (period) => {
   const now = new Date();
   if (period === "year") return String(now.getFullYear());
-  if (period === "month") return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  if (period === "month")
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 };
 
-export const DashboardOverview = ({ analytics, onCreateInstructor, onViewUsers, onRefreshAnalytics }) => {
+export const DashboardOverview = ({
+  analytics,
+  onCreateInstructor,
+  onViewUsers,
+  onRefreshAnalytics,
+}) => {
   const roleChartData = buildRoleChartData(analytics);
   const platformChartData = buildPlatformChartData(analytics);
   const statusChartData = buildStatusChartData(analytics);
@@ -27,7 +41,11 @@ export const DashboardOverview = ({ analytics, onCreateInstructor, onViewUsers, 
   const [revenueDate, setRevenueDate] = useState(() => getRevenueDate("month"));
   const formatCurrency = ({ currency, amount }) => {
     try {
-      return new Intl.NumberFormat(undefined, { style: "currency", currency: currency.toUpperCase(), maximumFractionDigits: 2 }).format(amount);
+      return new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency: currency.toUpperCase(),
+        maximumFractionDigits: 2,
+      }).format(amount);
     } catch {
       return `${currency.toUpperCase()} ${Number(amount).toLocaleString()}`;
     }
@@ -41,10 +59,26 @@ export const DashboardOverview = ({ analytics, onCreateInstructor, onViewUsers, 
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Users" value={analytics?.totalUsers || 0} icon={<Users />} />
-        <StatCard title="Students" value={analytics?.totalStudents || 0} icon={<GraduationCap />} />
-        <StatCard title="Instructors" value={analytics?.totalInstructors || 0} icon={<ShieldCheck />} />
-        <StatCard title="Courses" value={analytics?.totalCourses || 0} icon={<BookOpen />} />
+        <StatCard
+          title="Total Users"
+          value={analytics?.totalUsers || 0}
+          icon={<Users />}
+        />
+        <StatCard
+          title="Students"
+          value={analytics?.totalStudents || 0}
+          icon={<GraduationCap />}
+        />
+        <StatCard
+          title="Instructors"
+          value={analytics?.totalInstructors || 0}
+          icon={<ShieldCheck />}
+        />
+        <StatCard
+          title="Courses"
+          value={analytics?.totalCourses || 0}
+          icon={<BookOpen />}
+        />
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -56,16 +90,32 @@ export const DashboardOverview = ({ analytics, onCreateInstructor, onViewUsers, 
       <RevenueTrendChart data={analytics?.monthlyRevenueTrend || []} />
 
       <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard title="Enrollments" value={analytics?.totalEnrollments || 0} icon={<BookOpen />} />
-        <StatCard title="Active Users" value={analytics?.activeUsers || 0} icon={<Users />} />
-        <StatCard title="Inactive Users" value={analytics?.inactiveUsers || 0} icon={<Users />} />
+        <StatCard
+          title="Enrollments"
+          value={analytics?.totalEnrollments || 0}
+          icon={<BookOpen />}
+        />
+        <StatCard
+          title="Active Users"
+          value={analytics?.activeUsers || 0}
+          icon={<Users />}
+        />
+        <StatCard
+          title="Inactive Users"
+          value={analytics?.inactiveUsers || 0}
+          icon={<Users />}
+        />
       </div>
 
       <section className="mt-8 rounded-xl bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Course revenue</h2>
-            <p className="mt-1 text-sm text-gray-500">Revenue from payments confirmed by Stripe</p>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Course revenue
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Revenue from payments confirmed by Stripe
+            </p>
           </div>
           <CreditCard className="text-emerald-600" size={22} />
         </div>
@@ -89,51 +139,105 @@ export const DashboardOverview = ({ analytics, onCreateInstructor, onViewUsers, 
             </select>
           </label>
           <label className="text-sm font-medium text-gray-700">
-            {revenuePeriod === "day" ? "Select day" : revenuePeriod === "year" ? "Select year" : "Select month"}
+            {revenuePeriod === "day"
+              ? "Select day"
+              : revenuePeriod === "year"
+                ? "Select year"
+                : "Select month"}
             <input
-              type={revenuePeriod === "day" ? "date" : revenuePeriod === "year" ? "number" : "month"}
+              type={
+                revenuePeriod === "day"
+                  ? "date"
+                  : revenuePeriod === "year"
+                    ? "number"
+                    : "month"
+              }
               min={revenuePeriod === "year" ? "2000" : undefined}
-              max={revenuePeriod === "year" ? String(new Date().getFullYear()) : undefined}
+              max={
+                revenuePeriod === "year"
+                  ? String(new Date().getFullYear())
+                  : undefined
+              }
               value={revenueDate}
               onChange={(event) => {
                 setRevenueDate(event.target.value);
-                const isComplete = revenuePeriod === "year"
-                  ? /^\d{4}$/.test(event.target.value)
-                  : revenuePeriod === "month"
-                    ? /^\d{4}-(0[1-9]|1[0-2])$/.test(event.target.value)
-                    : /^\d{4}-\d{2}-\d{2}$/.test(event.target.value);
-                if (isComplete) onRefreshAnalytics?.(revenuePeriod, event.target.value);
+                const isComplete =
+                  revenuePeriod === "year"
+                    ? /^\d{4}$/.test(event.target.value)
+                    : revenuePeriod === "month"
+                      ? /^\d{4}-(0[1-9]|1[0-2])$/.test(event.target.value)
+                      : /^\d{4}-\d{2}-\d{2}$/.test(event.target.value);
+                if (isComplete)
+                  onRefreshAnalytics?.(revenuePeriod, event.target.value);
               }}
               className="mt-1 block rounded-lg border border-gray-300 bg-white px-3 py-2"
             />
           </label>
-          <span className="pb-2 text-sm text-gray-500">{analytics?.selectedRevenue?.purchaseCount || 0} paid purchases</span>
+          <span className="pb-2 text-sm text-gray-500">
+            {analytics?.selectedRevenue?.purchaseCount || 0} paid purchases
+          </span>
         </div>
         <div className="mt-4 rounded-lg border border-emerald-100 bg-emerald-50 p-4">
-          <p className="text-sm font-medium text-emerald-800">Selected {revenuePeriod} revenue ({revenueDate})</p>
+          <p className="text-sm font-medium text-emerald-800">
+            Selected {revenuePeriod} revenue ({revenueDate})
+          </p>
           {analytics?.selectedRevenue?.byCurrency?.length ? (
             <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
-              {analytics.selectedRevenue.byCurrency.map((item) => <p key={item.currency} className="text-2xl font-bold text-emerald-950">{formatCurrency(item)} <span className="text-sm font-medium text-emerald-800">({item.purchases} purchases)</span></p>)}
+              {analytics.selectedRevenue.byCurrency.map((item) => (
+                <p
+                  key={item.currency}
+                  className="text-2xl font-bold text-emerald-950"
+                >
+                  {formatCurrency(item)}{" "}
+                  <span className="text-sm font-medium text-emerald-800">
+                    ({item.purchases} purchases)
+                  </span>
+                </p>
+              ))}
             </div>
-          ) : <p className="mt-2 text-2xl font-bold text-emerald-950">—</p>}
+          ) : (
+            <p className="mt-2 text-2xl font-bold text-emerald-950">—</p>
+          )}
         </div>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <div className="rounded-lg bg-emerald-50 p-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-emerald-800"><Wallet size={16} /> Total paid revenue</div>
+            <div className="flex items-center gap-2 text-sm font-medium text-emerald-800">
+              <Wallet size={16} /> Total paid revenue
+            </div>
             {analytics?.revenueByCurrency?.length ? (
               <div className="mt-3 space-y-1">
-                {analytics.revenueByCurrency.map((item) => <p key={item.currency} className="text-2xl font-bold text-emerald-950">{formatCurrency(item)}</p>)}
+                {analytics.revenueByCurrency.map((item) => (
+                  <p
+                    key={item.currency}
+                    className="text-2xl font-bold text-emerald-950"
+                  >
+                    {formatCurrency(item)}
+                  </p>
+                ))}
               </div>
-            ) : <p className="mt-3 text-2xl font-bold text-emerald-950">—</p>}
+            ) : (
+              <p className="mt-3 text-2xl font-bold text-emerald-950">—</p>
+            )}
           </div>
           <div className="rounded-lg bg-blue-50 p-4">
             <p className="text-sm font-medium text-blue-800">This month</p>
             {analytics?.monthlyRevenueByCurrency?.length ? (
               <div className="mt-3 space-y-1">
-                {analytics.monthlyRevenueByCurrency.map((item) => <p key={item.currency} className="text-2xl font-bold text-blue-950">{formatCurrency(item)}</p>)}
+                {analytics.monthlyRevenueByCurrency.map((item) => (
+                  <p
+                    key={item.currency}
+                    className="text-2xl font-bold text-blue-950"
+                  >
+                    {formatCurrency(item)}
+                  </p>
+                ))}
               </div>
-            ) : <p className="mt-3 text-2xl font-bold text-blue-950">—</p>}
-            <p className="mt-2 text-xs text-blue-700">{analytics?.paidPurchaseCount || 0} paid course purchases overall</p>
+            ) : (
+              <p className="mt-3 text-2xl font-bold text-blue-950">—</p>
+            )}
+            <p className="mt-2 text-xs text-blue-700">
+              {analytics?.paidPurchaseCount || 0} paid course purchases overall
+            </p>
           </div>
         </div>
       </section>

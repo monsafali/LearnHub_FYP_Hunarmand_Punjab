@@ -27,6 +27,77 @@ export const GetCourse = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+export const getInstructorAnalytics = catchAsyncErrors(async (req, res) => {
+  const courses = await Course.find({ trainer: req.user._id }).select("name");
+  const courseIds = courses.map((course) => course._id);
+  const [lessons, enrollments, assignments] = await Promise.all([
+    Lesson.find({ course: { $in: courseIds } }).select("course title isPublished createdAt order"),
+    EnrollmentCourse.find({ course: { $in: courseIds }, status: { $ne: "cancelled" } }).select("course student progress status"),
+    Assignment.find({ course: { $in: courseIds } }).select("course totalMarks"),
+  ]);
+  const assignmentIds = assignments.map((assignment) => assignment._id);
+  const submissions = assignmentIds.length
+    ? await AssignmentSubmission.find({ assignment: { $in: assignmentIds } }).select("assignment marks status")
+    : [];
+
+  const courseStats = courses.map((course) => {
+    const courseEnrollments = enrollments.filter((entry) => entry.course.toString() === course._id.toString());
+    const courseAssignments = assignments.filter((entry) => entry.course.toString() === course._id.toString());
+    const courseAssignmentIds = new Set(courseAssignments.map((entry) => entry._id.toString()));
+    const courseSubmissions = submissions.filter((entry) => courseAssignmentIds.has(entry.assignment.toString()));
+    const graded = courseSubmissions.filter((entry) => entry.status === "graded" && entry.marks !== null);
+    const scorePercentages = graded.map((submission) => {
+      const assignment = courseAssignments.find((entry) => entry._id.toString() === submission.assignment.toString());
+      return assignment?.totalMarks ? (submission.marks / assignment.totalMarks) * 100 : null;
+    }).filter((value) => value !== null);
+    const averageScore = scorePercentages.length ? scorePercentages.reduce((sum, score) => sum + score, 0) / scorePercentages.length : 0;
+    const averageProgress = courseEnrollments.length
+      ? courseEnrollments.reduce((sum, entry) => sum + (entry.progress || 0), 0) / courseEnrollments.length
+      : 0;
+
+    return {
+      _id: course._id,
+      name: course.name,
+      students: courseEnrollments.length,
+      completedStudents: courseEnrollments.filter((entry) => entry.status === "completed").length,
+      averageProgress: Math.round(averageProgress),
+      lectures: lessons.filter((entry) => entry.course.toString() === course._id.toString()).length,
+      lessons: lessons
+        .filter((entry) => entry.course.toString() === course._id.toString())
+        .map((lesson, index) => ({
+          _id: lesson._id,
+          title: lesson.title,
+          isPublished: lesson.isPublished,
+          order: lesson.order ?? index + 1,
+        }))
+        .sort((a, b) => a.order - b.order),
+      assignments: courseAssignments.length,
+      submissions: courseSubmissions.length,
+      gradedSubmissions: graded.length,
+      averageScore: Math.round(averageScore),
+    };
+  });
+
+  const totalSubmissions = submissions.length;
+  const gradedSubmissions = submissions.filter((entry) => entry.status === "graded").length;
+  const uniqueStudentIds = new Set(enrollments.map((entry) => entry.student.toString()));
+  res.status(200).json({
+    success: true,
+    analytics: {
+      courseCount: courses.length,
+      lectureCount: lessons.length,
+      studentCount: uniqueStudentIds.size,
+      completedStudentCount: enrollments.filter((entry) => entry.status === "completed").length,
+      averageProgress: enrollments.length ? Math.round(enrollments.reduce((sum, entry) => sum + (entry.progress || 0), 0) / enrollments.length) : 0,
+      assignmentCount: assignments.length,
+      submissionCount: totalSubmissions,
+      gradedSubmissionCount: gradedSubmissions,
+      pendingSubmissionCount: totalSubmissions - gradedSubmissions,
+      courseStats,
+    },
+  });
+});
+
 // =====================================================
 // CREATE COURSE
 // =====================================================

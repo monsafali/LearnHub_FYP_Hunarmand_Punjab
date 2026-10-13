@@ -9,6 +9,7 @@ const useInstructorStore = create((set) => ({
   analytics: null,
 
   loading: false,
+  analyticsLoading: false,
   assignmentsLoading: false,
   submissionsLoading: false,
   error: null,
@@ -36,17 +37,17 @@ const useInstructorStore = create((set) => ({
 
   getAnalytics: async () => {
     try {
-      set({ loading: true, error: null });
+      set({ analyticsLoading: true, error: null });
 
       const response = await API_BASE_URL.get("/course/analytics");
 
-      set({ analytics: response.data?.analytics || null, loading: false });
+      set({ analytics: response.data?.analytics || null, analyticsLoading: false });
 
       return { success: true, analytics: response.data?.analytics };
     } catch (error) {
       const message =
         error.response?.data?.message || "Failed to load analytics";
-      set({ loading: false, error: message });
+      set({ analyticsLoading: false, error: message });
       return { success: false, message };
     }
   },

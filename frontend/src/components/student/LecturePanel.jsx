@@ -26,7 +26,7 @@ export const LecturePanel = ({ lesson, lessons }) => {
   return (
     <div>
       <div className="bg-black">
-        <div className="mx-auto aspect-video max-h-[700px] w-full">
+        <div className="aspect-video max-h-[min(70vh,760px)] w-full">
           <video
             key={lesson._id}
             className="h-full w-full object-contain"
@@ -40,7 +40,7 @@ export const LecturePanel = ({ lesson, lessons }) => {
       </div>
 
       <div className="bg-white">
-        <div className="mx-auto max-w-5xl px-5 py-7 md:px-8">
+        <div className="px-4 py-6 sm:px-6 md:px-8">
           <div className="mb-6">
             <p className="mb-2 text-sm font-medium text-blue-600">
               Lecture {lectureNumber}

@@ -1,44 +1,44 @@
 const Footer = () => {
   return (
-    <footer className="bg-green-50">
-      <div className="mx-auto max-w-3xl px-4 py-10">
-        <div className="grid gap-8 md:grid-cols-3">
+    <footer className="relative z-50 border-t border-slate-200 bg-slate-900 text-slate-100">
+      <div className="mx-auto max-w-7xl px-4 py-9 sm:px-6 sm:py-10">
+        <div className="grid gap-7 sm:grid-cols-2 md:grid-cols-3">
           <div>
-            <h2 className="mb-3 text-xl font-bold">LMS</h2>
+            <h2 className="mb-3 text-xl font-bold text-white">LearnHub</h2>
 
-            <p className="text-sm leading-6 text-black">
+            <p className="max-w-md text-sm leading-6 text-slate-300">
               Learn new skills, improve your knowledge, and build your career
               with our online learning platform.
             </p>
           </div>
 
           <div>
-            <h3 className="mb-3 font-semibold">Quick Links</h3>
+            <h3 className="mb-3 font-semibold text-white">Quick Links</h3>
 
-            <div className="space-y-2 text-sm text-black">
+            <div className="space-y-2 text-sm text-slate-300">
               <p className="cursor-pointer hover:text-black-900">Courses</p>
 
-              <p className="cursor-pointer text-black">About</p>
+              <p className="cursor-pointer">About</p>
 
-              <p className="cursor-pointer text-black">Contact</p>
+              <p className="cursor-pointer">Contact</p>
             </div>
           </div>
 
           <div>
-            <h3 className="mb-3 font-semibold">Account</h3>
+            <h3 className="mb-3 font-semibold text-white">Account</h3>
 
-            <div className="space-y-2 text-sm text-black">
-              <p className="cursor-pointer text-black">My Profile</p>
+            <div className="space-y-2 text-sm text-slate-300">
+              <p className="cursor-pointer">My Profile</p>
 
               <p className="cursor-pointer ">Change Password</p>
 
-              <p className="cursor-pointer text-black">Support</p>
+              <p className="cursor-pointer">Support</p>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} LMS. All rights reserved.
+        <div className="mt-8 border-t border-slate-700 pt-6 text-center text-sm text-slate-400">
+          © {new Date().getFullYear()} LearnHub. All rights reserved.
         </div>
       </div>
     </footer>

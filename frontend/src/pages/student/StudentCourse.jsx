@@ -87,7 +87,7 @@ const StudentCourse = () => {
       />
 
       {activeTab === "content" ? (
-        <div className="mx-auto flex max-w-7xl flex-col lg:flex-row">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-col lg:flex-row">
           <LectureSidebar
             lessons={lessons}
             selectedLesson={selectedLesson}

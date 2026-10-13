@@ -13,6 +13,7 @@ import {
   getAssignmentSubmissions,
   gradeAssignment,
   getInstructorAssignments,
+  getInstructorAnalytics,
 } from "../controllers/courseController.js";
 
 import { authorizedRole, isAuthenticated } from "../middleware/isAuth.js";
@@ -24,6 +25,8 @@ const router = express.Router();
 // =====================================================
 
 router.get("/getCourse", isAuthenticated, GetCourse);
+
+router.get("/analytics", isAuthenticated, authorizedRole("Instructor"), getInstructorAnalytics);
 
 router.get("/getCourseById/:id", isAuthenticated, getCourseById);
 

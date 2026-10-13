@@ -8,7 +8,7 @@ export const LectureSidebar = ({
   sidebarOpen,
 }) => (
   <aside
-    className={`w-full border-b bg-white lg:sticky lg:top-0 lg:h-[calc(100vh-145px)] lg:w-[350px] lg:flex-shrink-0 lg:overflow-y-auto lg:border-b-0 lg:border-r ${
+    className={`w-full border-b bg-white lg:sticky lg:top-0 lg:h-[calc(100vh-145px)] lg:w-[280px] lg:flex-shrink-0 lg:overflow-y-auto lg:border-b-0 lg:border-r ${
       sidebarOpen ? "block" : "hidden lg:block"
     }`}
   >

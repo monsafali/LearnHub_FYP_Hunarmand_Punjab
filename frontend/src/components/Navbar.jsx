@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -43,18 +42,21 @@ const Navbar = () => {
   };
 
   return (
-    <nav className=" sticky top-0 z-50  border-b border-gray-200 bg-green-50">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+    <nav className="sticky top-0 z-50 border-b bg-green-50 shadow-sm">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-4">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-blue-600">
+        <Link
+          to="/"
+          className="shrink-0 text-xl font-bold text-emerald-700 sm:text-2xl"
+        >
           LearnHub
         </Link>
 
         {/* Navigation */}
-        <div className="flex items-center gap-6">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-6">
           <Link
             to="/"
-            className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+            className="hidden text-sm font-medium text-gray-700 transition hover:text-emerald-700 sm:block"
           >
             Home
           </Link>
@@ -199,7 +201,7 @@ const Navbar = () => {
 
               <Link
                 to="/signup"
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                className="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-800 sm:px-4 sm:text-sm"
               >
                 Signup
               </Link>

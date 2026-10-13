@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 
 import useAuthStore from "../../store/authStore";
+import useInstructorStore from "../../store/instructorStore";
 import { useCourseManager } from "../../hooks/instructor/useCourseManager";
 import { useLessonManager } from "../../hooks/instructor/useLessonManager";
 import { useAssignmentManager } from "../../hooks/instructor/useAssignmentManager";
 import { useStudentsView } from "../../hooks/instructor/useStudentsView";
 
 import { Sidebar } from "../../components/instructor/Sidebar";
-import { TopBar } from "../../components/instructor/TopBar";
 import { CoursesView } from "../../components/instructor/CoursesView";
+import { InstructorOverview } from "../../components/instructor/InstructorOverview";
 import { StudentsView } from "../../components/instructor/StudentsView";
 import { AssignmentsView } from "../../components/instructor/AssignmentsView";
 
@@ -19,6 +20,7 @@ import { AssignmentModal } from "../../components/instructor/modals/AssignmentMo
 import { SubmissionsModal } from "../../components/instructor/modals/SubmissionsModal";
 
 const PAGE_META = {
+  overview: { title: "Overview", subtitle: "Track enrollment, course progress, and assignment results" },
   courses: { title: "My courses", subtitle: "Create, edit and add lessons to your courses" },
   assignments: { title: "Assignments", subtitle: "Publish assignments and grade submissions" },
   students: { title: "Students", subtitle: "See who is enrolled in each course" },
@@ -26,8 +28,11 @@ const PAGE_META = {
 
 const InstructorDashboard = () => {
   const user = useAuthStore((state) => state.user);
+  const analytics = useInstructorStore((state) => state.analytics);
+  const analyticsLoading = useInstructorStore((state) => state.analyticsLoading);
+  const getAnalytics = useInstructorStore((state) => state.getAnalytics);
 
-  const [activeView, setActiveView] = useState("courses");
+  const [activeView, setActiveView] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -39,6 +44,7 @@ const InstructorDashboard = () => {
 
   useEffect(() => {
     courseManager.getCourses();
+    getAnalytics();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -102,22 +108,17 @@ const InstructorDashboard = () => {
         courseCount={instructorCourses.length}
       />
 
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-slate-950/50 backdrop-blur-sm lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       <div className="lg:pl-72">
-        <TopBar
-          title={PAGE_META[activeView].title}
-          subtitle={PAGE_META[activeView].subtitle}
-          user={user}
-          onOpenSidebar={() => setSidebarOpen(true)}
-        />
+        <div className="flex items-center gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3 lg:hidden">
+          <button onClick={() => setSidebarOpen(true)} aria-label="Open navigation" className="rounded-lg p-2 text-slate-600 hover:bg-slate-200">☰</button>
+          <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-800">{PAGE_META[activeView].title}</p><p className="truncate text-xs text-slate-500">{PAGE_META[activeView].subtitle}</p></div>
+        </div>
 
         <main className="mx-auto max-w-7xl p-4 md:p-8">
+          {activeView === "overview" && (
+            <InstructorOverview analytics={analytics} loading={analyticsLoading} onRefresh={getAnalytics} onAddLesson={lessonManager.openLessonModal} />
+          )}
+
           {activeView === "courses" && (
             <CoursesView
               instructorCourses={instructorCourses}

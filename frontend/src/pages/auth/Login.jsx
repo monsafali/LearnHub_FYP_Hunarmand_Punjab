@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import OtpModal from "../../components/OtpModal";
 import { Eye, EyeOff } from "lucide-react";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
 const Login = () => {
   const login = useAuthStore((state) => state.login);
 
@@ -44,37 +42,18 @@ const Login = () => {
   };
 
   return (
-
 <>
-
-
-
-  <div className="relative min-h-screen overflow-hidden">
-
-    {/* Background Video */}
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="absolute inset-0 h-full w-full object-cover"
-    >
-      <source
-        src={new URL( "../../assets/v2.mp4", import.meta.url)}
-        type="video/mp4"
-      />
-    </video>
-
-    {/* Dark Overlay */}
-    <div className="absolute inset-0 bg-black/50" />
+  <div className="relative flex min-h-[calc(100vh-76px)] items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-50 via-slate-50 to-cyan-100 px-4 py-10">
+    <div className="pointer-events-none absolute -left-24 top-12 h-72 w-72 rounded-full bg-emerald-200/50 blur-3xl" />
+    <div className="pointer-events-none absolute -right-24 bottom-8 h-80 w-80 rounded-full bg-cyan-200/50 blur-3xl" />
 
     {/* ================================================= */}
     {/* LOGIN CONTENT */}
     {/* ================================================= */}
 
-    <div className="relative z-10 flex min-h-screen items-center justify-center px-4 ">
+    <div className="relative z-10 w-full max-w-md">
 
-      <div className="w-full max-w-md rounded-2xl bg-white/95 p-8 shadow-2xl backdrop-blur-sm">
+      <div className="w-full rounded-2xl border border-white/80 bg-white/95 p-6 shadow-xl shadow-slate-900/10 backdrop-blur-sm sm:p-8">
 
         {/* Heading */}
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useAdminStore from "../../store/adminStore";
+import PUNJAB from "../../utils/District";
 
 const emptyCreateForm = {
   fullname: "",
@@ -79,7 +80,14 @@ export const useInstructors = () => {
   const [editForm, setEditForm] = useState(emptyEditForm);
 
   const updateEditField = (field) => (e) =>
-    setEditForm((prev) => ({ ...prev, [field]: e.target.value }));
+    setEditForm((prev) => {
+      const value = e.target.value;
+      if (field === "districtId") {
+        const district = (PUNJAB || []).find((item) => item.districtId === value);
+        return { ...prev, districtId: value, district: district?.districtName || "", tehsil: "" };
+      }
+      return { ...prev, [field]: value };
+    });
 
   const openEditModal = (instructor) => {
     setSelectedInstructor(instructor);
@@ -89,7 +97,7 @@ export const useInstructors = () => {
       email: instructor.email || "",
       cnic: instructor.cnic || "",
       district: instructor.district || "",
-      districtId: instructor.districtId || "",
+      districtId: instructor.districtId || PUNJAB.find((item) => item.districtName === instructor.district)?.districtId || "",
       tehsil: instructor.tehsil || "",
       address: instructor.address || "",
       contactno: instructor.contactno || "",

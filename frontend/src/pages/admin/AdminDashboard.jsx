@@ -11,7 +11,7 @@ import { useAdminAnalytics } from "../../hooks/admin/useAdminAnalytics";
 import { useInstructors } from "../../hooks/admin/useInstructors";
 import { useUsersDirectory } from "../../hooks/admin/useUsersDirectory";
 
-import { AdminSidebar, AdminMobileHeader, AdminDesktopHeader } from "../../components/admin/AdminLayout";
+import { AdminSidebar } from "../../components/admin/AdminLayout";
 import { DashboardOverview } from "../../components/admin/DashboardOverview";
 import { InstructorsTable } from "../../components/admin/InstructorsTable";
 import { UsersTable } from "../../components/admin/UsersTable";
@@ -36,8 +36,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <AdminMobileHeader onOpenSidebar={() => setSidebarOpen(true)} />
-
       <AdminSidebar
         activeTab={activeTab}
         goTo={goTo}
@@ -45,10 +43,13 @@ const AdminDashboard = () => {
         setSidebarOpen={setSidebarOpen}
       />
 
-      <main className="lg:ml-64">
-        <AdminDesktopHeader activeTab={activeTab} user={user} />
+      <main className="min-h-screen bg-slate-50 lg:pl-64">
+        <div className="flex items-center gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3 lg:hidden">
+          <button onClick={() => setSidebarOpen(true)} aria-label="Open navigation" className="rounded-lg p-2 text-slate-600 hover:bg-slate-200">☰</button>
+          <h1 className="truncate text-sm font-semibold text-slate-800">{activeTab === "instructors" ? "Manage instructors" : activeTab === "users" ? "Users" : "Dashboard"}</h1>
+        </div>
 
-        <div className="p-4 md:p-8">
+        <div className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
           {activeTab === "dashboard" && (
             <DashboardOverview
               analytics={analytics}
