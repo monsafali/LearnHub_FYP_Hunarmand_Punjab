@@ -395,6 +395,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 
 
+
 export const updateProfile = catchAsyncErrors(async (req, res, next) => {
   const user = await UserAuth.findById(req.user._id);
 
@@ -414,32 +415,30 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
 
   const file = req.files?.imageFile;
 
-  if (!file) {
-    return next(new ErrorHandler("Image is required", 400));
-  }
+  // Update the image only if a new image is provided
+  if (file) {
+    if (!isFileTypeSupported(file.name)) {
+      return next(
+        new ErrorHandler("File type not supported", 400)
+      );
+    }
 
-  if (!isFileTypeSupported(file.name)) {
-    return next(
-      new ErrorHandler("File type not supported", 400)
+    // Upload new image
+    const upload = await uploadToCloudinary(
+      file,
+      "Learn_HUB"
     );
+
+    // Delete old image after successful upload
+    if (user.imagePublicId) {
+      await deleteFromCloudinary(user.imagePublicId);
+    }
+
+    user.imageUrl = upload.secure_url;
+    user.imagePublicId = upload.public_id;
   }
 
-  // Upload new image first
-  const upload = await uploadToCloudinary(
-    file,
-    "Learn_HUB"
-  );
-
-  // Delete old image if user already has one
-  if (user.imagePublicId) {
-    await deleteFromCloudinary(user.imagePublicId);
-  }
-
-  // Save new image
-  user.imageUrl = upload.secure_url;
-  user.imagePublicId = upload.public_id;
-
-  // Update profile fields
+  // Update profile fields regardless of image selection
   user.cnic = cnic;
   user.district = district;
   user.districtId = districtId;

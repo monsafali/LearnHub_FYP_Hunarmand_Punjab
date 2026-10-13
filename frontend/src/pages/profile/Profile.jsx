@@ -96,11 +96,6 @@ const Profile = () => {
     setError("");
     setSuccess("");
 
-    // Your backend requires imageFile
-    if (!imageFile) {
-      setError("Please select a profile image.");
-      return;
-    }
 
     const data = new FormData();
 
@@ -113,7 +108,9 @@ const Profile = () => {
     data.append("bio", formData.bio);
 
     // IMPORTANT: backend expects imageFile
-    data.append("imageFile", imageFile);
+if (imageFile) {
+  data.append("imageFile", imageFile);
+}
 
     const result = await updateProfile(data);
 
