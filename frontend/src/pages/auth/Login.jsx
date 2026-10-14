@@ -44,12 +44,8 @@ const Login = () => {
   return (
 <>
   <div className="relative flex min-h-[calc(100vh-76px)] items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-50 via-slate-50 to-cyan-100 px-4 py-10">
-    <div className="pointer-events-none absolute -left-24 top-12 h-72 w-72 rounded-full bg-emerald-200/50 blur-3xl" />
-    <div className="pointer-events-none absolute -right-24 bottom-8 h-80 w-80 rounded-full bg-cyan-200/50 blur-3xl" />
 
-    {/* ================================================= */}
-    {/* LOGIN CONTENT */}
-    {/* ================================================= */}
+
 
     <div className="relative z-10 w-full max-w-md">
 

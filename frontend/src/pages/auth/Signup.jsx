@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import OtpModal from "../../components/OtpModal";
 
-
 import { Eye, EyeOff } from "lucide-react";
 const Signup = () => {
   const signup = useAuthStore((state) => state.signup);
@@ -51,152 +50,143 @@ const Signup = () => {
   return (
     <>
       <div className="relative flex min-h-[calc(100vh-76px)] items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-50 via-slate-50 to-cyan-100 px-4 py-10">
-        <div className="pointer-events-none absolute -left-24 top-8 h-72 w-72 rounded-full bg-emerald-200/50 blur-3xl" />
-        <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-cyan-200/50 blur-3xl" />
+        <div className="relative z-10 w-full max-w-md">
+          <div className="w-full rounded-2xl border border-white/80 bg-white/95 p-6 shadow-xl shadow-slate-900/10 backdrop-blur-sm sm:p-10">
+            {/* Heading */}
 
-        {/* ================================================= */}
-        {/* SIGNUP CONTENT */}
-        {/* ================================================= */}
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create Student Account
+            </h1>
 
-        <div className="relative z-10 w-full max-w-lg">
-            <div className="w-full rounded-2xl border border-white/80 bg-white/95 p-6 shadow-xl shadow-slate-900/10 backdrop-blur-sm sm:p-10">
-              {/* Heading */}
+            <p className="mt-2 text-gray-500">
+              Join our LMS and start learning.
+            </p>
 
-              <h1 className="text-3xl font-bold text-gray-900">
-                Create Student Account
-              </h1>
+            {/* Error */}
 
-              <p className="mt-2 text-gray-500">
-                Join our LMS and start learning.
-              </p>
+            {error && (
+              <div className="mt-2 rounded-lg bg-red-100 p-3 text-red-600">
+                {error}
+              </div>
+            )}
 
-              {/* Error */}
+            {/* Signup Form */}
 
-              {error && (
-                <div className="mt-2 rounded-lg bg-red-100 p-3 text-red-600">
-                  {error}
-                </div>
-              )}
+            <form onSubmit={handleSubmit} className="mt-2 space-y-2">
+              {/* Fullname */}
 
-              {/* Signup Form */}
+              <input
+                type="text"
+                name="fullname"
+                value={formData.fullname}
+                onChange={handleChange}
+                placeholder="Full name"
+                required
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
 
-              <form onSubmit={handleSubmit} className="mt-2 space-y-2">
-                {/* Fullname */}
+              {/* Username */}
 
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Username"
+                required
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+
+              {/* Email */}
+
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                required
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+
+              {/* Password */}
+              {/* Password */}
+
+              <div className="relative">
                 <input
-                  type="text"
-                  name="fullname"
-                  value={formData.fullname}
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
                   onChange={handleChange}
-                  placeholder="Full name"
+                  placeholder="Password"
                   required
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pr-12 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
-
-                {/* Username */}
-
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  placeholder="Username"
-                  required
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                />
-
-                {/* Email */}
-
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Email"
-                  required
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                />
-
-                {/* Password */}
-                {/* Password */}
-
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Password"
-                    required
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pr-12 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-
-                {/* Confirm Password */}
-
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Confirm password"
-                    required
-                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pr-12 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    aria-label={
-                      showConfirmPassword
-                        ? "Hide confirm password"
-                        : "Show confirm password"
-                    }
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff size={20} />
-                    ) : (
-                      <Eye size={20} />
-                    )}
-                  </button>
-                </div>
-
-                {/* Create Account */}
 
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {loading ? "Creating account..." : "Create Account"}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
-              </form>
+              </div>
 
-              {/* Login */}
+              {/* Confirm Password */}
 
-              <p className="mt-6 text-center text-sm text-gray-600">
-                Already have an account?{" "}
-                <Link
-                  to="/login"
-                  className="font-semibold text-blue-600 hover:underline"
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm password"
+                  required
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pr-12 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  aria-label={
+                    showConfirmPassword
+                      ? "Hide confirm password"
+                      : "Show confirm password"
+                  }
                 >
-                  Login
-                </Link>
-              </p>
-            </div>
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
+
+              {/* Create Account */}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? "Creating account..." : "Create Account"}
+              </button>
+            </form>
+
+            {/* Login */}
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-semibold text-blue-600 hover:underline"
+              >
+                Login
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
 
