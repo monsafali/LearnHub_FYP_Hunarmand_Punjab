@@ -139,37 +139,31 @@ Example configuration:
 
 ```env
 
-MONGO_URI=
-PORT=
-JWT_SECRET_KEY=
-JWT_EXPIRES=
-COOKIE_EXPIRE=
-BREVO_API_KEY
-CLIENT_URL=
+MONGO_URI=mongodb://localhost:27017/Hunarmandpunjab
+PORT=5000
+JWT_SECRET_KEY=asfasdfasfd
+JWT_EXPIRES="7d"
+COOKIE_EXPIRE=7
+CLIENT_URL=http://localhost:5173
+BREVO_API_KEY=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+BACKEND_URL=http://localhost:5000
 SUPER_ADMIN_NAME=
 SUPER_ADMIN_USERNAME=
-SUPER_ADMIN_PASSWORD=
 SUPER_ADMIN_EMAIL=
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_SECRET=
-CLOUDINARY_API_KEY=
-BACKEND_URL=
+SUPER_ADMIN_PASSWORD=
+STRIPE_SECRET_KEY=
 SENDER_EMAIL=
-JWT_TIMEOUT=1h
+NODE_ENV=development
+
+
+
 
 
 
 ```
-
-Add any other environment variables required by your integrations, such as Cloudinary, Stripe, Google OAuth, OpenAI, and email services.
-
-### Stripe course payments
-
-Set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_CURRENCY`, and `CLIENT_URL` in the backend environment. `STRIPE_CURRENCY` defaults to `pkr` to match the rupee prices shown in the UI; confirm the currency is supported for your Stripe account. Course prices are stored in major currency units (for example, `1000` means PKR 1,000) and converted to Stripe's minor units on the server. Configure a Stripe webhook endpoint at `POST /api/payments/stripe-webhook` for `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `checkout.session.expired`. Keep both Stripe keys only on the backend. Enrollments are created only after a signed webhook confirms the exact payment amount and currency. For local development, use Stripe CLI to forward webhook events to your local endpoint and use Stripe test keys/cards.
-
-The course payment form is embedded in the app using Stripe Embedded Checkout. Set `VITE_STRIPE_PUBLISHABLE_KEY` on the frontend (on Vercel, set it for the environment you deploy and redeploy). Set the backend `CLIENT_URL` to `https://learn-hub-fyp-hunarmand-punjab.vercel.app`; set frontend `VITE_BACKEND_URL` to `https://learnhub-fyp-hunarmand-punjab.onrender.com/api`. In Stripe Workbench, create a webhook pointing to `https://learnhub-fyp-hunarmand-punjab.onrender.com/api/payments/stripe-webhook` and subscribe to the three events above. Copy its signing secret to Render as `STRIPE_WEBHOOK_SECRET`. Use matching test or live key modes for the frontend publishable key, backend secret key, and webhook endpoint.
-
-**Important:** The variable names above are examples. Match them to the names actually used in your source code. Never commit real credentials or secret keys to GitHub.
 
 Start the backend:
 
@@ -187,25 +181,6 @@ Visit the local frontend URL provided by Vite, usually:
 http://localhost:5173
 ```
 
-The backend will run on the port configured in your environment variables.
-
-## Environment Variables
-
-Configure the variables required by your project.
-
-| Variable                  | Purpose                                |
-| ------------------------- | -------------------------------------- |
-| `PORT`                    | Backend server port                    |
-| `MONGO_URI`               | MongoDB connection string              |
-| `JWT_SECRET`              | Secret used for JWT signing            |
-| `CLIENT_URL`              | Frontend origin for CORS and redirects |
-| Cloudinary credentials    | Media upload and storage               |
-| Stripe credentials        | Payment integration                    |
-| Google OAuth credentials  | Google authentication                  |
-| OpenAI API key            | AI-powered features                    |
-| Email service credentials | Email delivery                         |
-
-Use the exact variable names required by your implementation. Keep all secret values in environment files and exclude those files from version control.
 
 ## Security
 
