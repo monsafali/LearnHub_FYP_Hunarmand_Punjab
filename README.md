@@ -114,6 +114,7 @@ For example, with Vite:
 
 ```env
 VITE_BACKEND_URLL=http://localhost:5000/api
+VITE_STRIPE_PUBLISHABLE_KEY=asdfsdfdfs
 ```
 
 Use the actual environment variable names referenced in your frontend code.
