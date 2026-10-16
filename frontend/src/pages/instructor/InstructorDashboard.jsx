@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
 import useAuthStore from "../../store/authStore";
-import useInstructorStore from "../../store/instructorStore";
 import { useCourseManager } from "../../hooks/instructor/useCourseManager";
 import { useLessonManager } from "../../hooks/instructor/useLessonManager";
 import { useAssignmentManager } from "../../hooks/instructor/useAssignmentManager";
@@ -9,7 +8,6 @@ import { useStudentsView } from "../../hooks/instructor/useStudentsView";
 
 import { Sidebar } from "../../components/instructor/Sidebar";
 import { CoursesView } from "../../components/instructor/CoursesView";
-import { InstructorOverview } from "../../components/instructor/InstructorOverview";
 import { StudentsView } from "../../components/instructor/StudentsView";
 import { AssignmentsView } from "../../components/instructor/AssignmentsView";
 
@@ -18,23 +16,17 @@ import { EditCourseModal } from "../../components/instructor/modals/EditCourseMo
 import { LessonModal } from "../../components/instructor/modals/LessonModal";
 import { AssignmentModal } from "../../components/instructor/modals/AssignmentModal";
 import { SubmissionsModal } from "../../components/instructor/modals/SubmissionsModal";
-import { useNavigate } from "react-router-dom";
 
 const PAGE_META = {
-  overview: { title: "Overview", subtitle: "Track enrollment, course progress, and assignment results" },
   courses: { title: "My courses", subtitle: "Create, edit and add lessons to your courses" },
   assignments: { title: "Assignments", subtitle: "Publish assignments and grade submissions" },
   students: { title: "Students", subtitle: "See who is enrolled in each course" },
 };
 
 const InstructorDashboard = () => {
-  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const analytics = useInstructorStore((state) => state.analytics);
-  const analyticsLoading = useInstructorStore((state) => state.analyticsLoading);
-  const getAnalytics = useInstructorStore((state) => state.getAnalytics);
 
-  const [activeView, setActiveView] = useState("overview");
+  const [activeView, setActiveView] = useState("courses");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -46,7 +38,6 @@ const InstructorDashboard = () => {
 
   useEffect(() => {
     courseManager.getCourses();
-    getAnalytics();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -103,10 +94,6 @@ const InstructorDashboard = () => {
         </div>
 
         <main className="mx-auto max-w-7xl p-4 md:p-8">
-          {activeView === "overview" && (
-            <InstructorOverview analytics={analytics} loading={analyticsLoading} onRefresh={getAnalytics} onOpenCourse={(course) => navigate(`/instructor/course/${course._id}`)} />
-          )}
-
           {activeView === "courses" && (
             <CoursesView
               instructorCourses={instructorCourses}
@@ -129,6 +116,9 @@ const InstructorDashboard = () => {
               loadAssignments={assignmentManager.loadAssignments}
               assignments={assignmentManager.assignments}
               assignmentsLoading={assignmentManager.assignmentsLoading}
+              submissionSummaries={assignmentManager.submissionSummaries}
+              submissionSummaryLoading={assignmentManager.submissionSummaryLoading}
+              submissionsDueToday={assignmentManager.submissionsDueToday}
               onAddAssignment={assignmentManager.openAssignmentModal}
               onViewSubmissions={assignmentManager.openSubmissions}
             />

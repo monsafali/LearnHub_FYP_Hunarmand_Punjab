@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import useInstructorStore from "../../store/instructorStore";
 
@@ -19,14 +19,46 @@ export const useAssignmentManager = () => {
 
   // ---------- assignments list (per course) ----------
   const [assignmentsCourseId, setAssignmentsCourseId] = useState("");
+  const [submissionSummaries, setSubmissionSummaries] = useState({});
+  const [submissionSummaryLoading, setSubmissionSummaryLoading] = useState(false);
+
+  const loadSubmissionSummaries = async (assignmentList) => {
+    if (!assignmentList.length) {
+      setSubmissionSummaries({});
+      return;
+    }
+
+    setSubmissionSummaryLoading(true);
+    const summaries = await Promise.all(
+      assignmentList.map(async (assignment) => {
+        const result = await getAssignmentSubmissions(assignment._id);
+        return [assignment._id, result.success ? result.submissions : []];
+      }),
+    );
+    setSubmissionSummaries(Object.fromEntries(summaries));
+    setSubmissionSummaryLoading(false);
+  };
 
   const loadAssignments = async (courseId) => {
     setAssignmentsCourseId(courseId);
+    setSubmissionSummaries({});
     if (!courseId) return;
 
     const result = await getInstructorAssignments(courseId);
     if (!result.success) toast.error(result.message);
+    else await loadSubmissionSummaries(result.assignments);
   };
+
+  const submissionsDueToday = useMemo(() => {
+    const today = new Date();
+    return Object.values(submissionSummaries).flat().filter((submission) => {
+      if (submission.status === "graded" || !submission.submittedAt) return false;
+      const submittedAt = new Date(submission.submittedAt);
+      return submittedAt.getFullYear() === today.getFullYear()
+        && submittedAt.getMonth() === today.getMonth()
+        && submittedAt.getDate() === today.getDate();
+    }).length;
+  }, [submissionSummaries]);
 
   // ---------- create assignment ----------
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
@@ -145,6 +177,9 @@ export const useAssignmentManager = () => {
     assignmentsLoading,
     assignmentsCourseId,
     loadAssignments,
+    submissionSummaries,
+    submissionSummaryLoading,
+    submissionsDueToday,
     // create
     showAssignmentModal,
     assignmentCourse,

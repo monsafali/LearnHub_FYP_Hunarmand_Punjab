@@ -2,6 +2,7 @@ import { Modal } from "../../ui/Modal";
 import Icon from "../../ui/Icon";
 import { SubmissionStatusBadge } from "../CourseThumb";
 import { inputClass } from "../../../utils/instructorHelpers";
+import { useMemo, useState } from "react";
 
 export const SubmissionsModal = ({
   assignment,
@@ -14,6 +15,43 @@ export const SubmissionsModal = ({
   onSubmitGrade,
   onClose,
 }) => (
+  <SubmissionsModalContent
+    assignment={assignment}
+    submissions={submissions}
+    submissionsLoading={submissionsLoading}
+    gradingId={gradingId}
+    gradeForm={gradeForm}
+    onGradeChange={onGradeChange}
+    onStartGrading={onStartGrading}
+    onSubmitGrade={onSubmitGrade}
+    onClose={onClose}
+  />
+);
+
+const SubmissionsModalContent = ({
+  assignment,
+  submissions,
+  submissionsLoading,
+  gradingId,
+  gradeForm,
+  onGradeChange,
+  onStartGrading,
+  onSubmitGrade,
+  onClose,
+}) => {
+  const [statusFilter, setStatusFilter] = useState("pending");
+  const filteredSubmissions = useMemo(
+    () => submissions.filter((submission) => {
+      if (statusFilter === "pending") return submission.status !== "graded";
+      if (statusFilter === "graded") return submission.status === "graded";
+      return true;
+    }),
+    [submissions, statusFilter],
+  );
+  const pendingCount = submissions.filter((submission) => submission.status !== "graded").length;
+  const gradedCount = submissions.length - pendingCount;
+
+  return (
   <Modal
     title="Submissions"
     subtitle={`${assignment?.title} · ${assignment?.totalMarks} marks`}
@@ -33,8 +71,28 @@ export const SubmissionsModal = ({
         No students have submitted this assignment yet.
       </p>
     ) : (
+      <>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-slate-500">{submissions.length} student {submissions.length === 1 ? "submission" : "submissions"}</p>
+        <div className="flex rounded-lg bg-slate-100 p-1" role="group" aria-label="Filter submissions by review status">
+          <button type="button" onClick={() => setStatusFilter("pending")} aria-pressed={statusFilter === "pending"} className={`rounded-md px-3 py-1.5 text-xs font-medium ${statusFilter === "pending" ? "bg-white text-amber-700 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+            Needs review ({pendingCount})
+          </button>
+          <button type="button" onClick={() => setStatusFilter("graded")} aria-pressed={statusFilter === "graded"} className={`rounded-md px-3 py-1.5 text-xs font-medium ${statusFilter === "graded" ? "bg-white text-emerald-700 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+            Checked ({gradedCount})
+          </button>
+          <button type="button" onClick={() => setStatusFilter("all")} aria-pressed={statusFilter === "all"} className={`rounded-md px-3 py-1.5 text-xs font-medium ${statusFilter === "all" ? "bg-white text-slate-800 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+            All
+          </button>
+        </div>
+      </div>
+      {filteredSubmissions.length === 0 ? (
+        <p className="rounded-lg border border-dashed border-slate-200 py-8 text-center text-sm text-slate-500">
+          {statusFilter === "pending" ? "No new submissions need review." : "No checked submissions yet."}
+        </p>
+      ) : (
       <ul className="space-y-3">
-        {submissions.map((submission) => {
+        {filteredSubmissions.map((submission) => {
           const student = submission.student;
           const isGrading = gradingId === submission._id;
 
@@ -176,7 +234,10 @@ export const SubmissionsModal = ({
           );
         })}
       </ul>
+      )}
+      </>
     )}
   </Modal>
-);
+  );
+};
 
