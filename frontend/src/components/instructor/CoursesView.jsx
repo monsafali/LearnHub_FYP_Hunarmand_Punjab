@@ -13,11 +13,6 @@ export const CoursesView = ({
   loading,
   onRefresh,
   onCreate,
-  onAddLesson,
-  onAddAssignment,
-  onViewStudents,
-  onEdit,
-  onDelete,
 }) => (
   <div className="space-y-5">
     <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 md:flex-row md:items-center">
@@ -96,11 +91,6 @@ export const CoursesView = ({
           <CourseCard
             key={course._id}
             course={course}
-            onAddLesson={onAddLesson}
-            onAddAssignment={onAddAssignment}
-            onViewStudents={onViewStudents}
-            onEdit={onEdit}
-            onDelete={onDelete}
           />
         ))}
       </div>

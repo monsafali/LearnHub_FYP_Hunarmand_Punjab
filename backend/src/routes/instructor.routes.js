@@ -14,6 +14,11 @@ import {
   gradeAssignment,
   getInstructorAssignments,
   getInstructorAnalytics,
+  getInstructorCourseContent,
+  updateLesson,
+  deleteLesson,
+  updateAssignment,
+  deleteAssignment,
 } from "../controllers/courseController.js";
 
 import { authorizedRole, isAuthenticated } from "../middleware/isAuth.js";
@@ -27,6 +32,11 @@ const router = express.Router();
 router.get("/getCourse", isAuthenticated, GetCourse);
 
 router.get("/analytics", isAuthenticated, authorizedRole("Instructor"), getInstructorAnalytics);
+router.get("/instructor/course/:courseId/content", isAuthenticated, authorizedRole("Instructor"), getInstructorCourseContent);
+router.put("/instructor/lessons/:lessonId", isAuthenticated, authorizedRole("Instructor"), updateLesson);
+router.delete("/instructor/lessons/:lessonId", isAuthenticated, authorizedRole("Instructor"), deleteLesson);
+router.put("/instructor/assignments/:assignmentId", isAuthenticated, authorizedRole("Instructor"), updateAssignment);
+router.delete("/instructor/assignments/:assignmentId", isAuthenticated, authorizedRole("Instructor"), deleteAssignment);
 
 router.get("/getCourseById/:id", isAuthenticated, getCourseById);
 

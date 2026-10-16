@@ -10,8 +10,9 @@ export const AssignmentModal = ({
   assignmentFile,
   setAssignmentFile,
   loading,
+  editing = false,
 }) => (
-  <Modal title="New assignment" subtitle={`Course: ${course?.name}`} onClose={onClose}>
+  <Modal title={editing ? "Edit assignment" : "New assignment"} subtitle={`Course: ${course?.name}`} onClose={onClose}>
     <form onSubmit={onSubmit} className="space-y-4">
       <Field label="Assignment title">
         <input
@@ -66,7 +67,7 @@ export const AssignmentModal = ({
           accept="application/pdf"
           file={assignmentFile}
           onChange={setAssignmentFile}
-          required
+          required={!editing}
           emptyText="Choose a PDF file"
         />
       </Field>
@@ -76,7 +77,7 @@ export const AssignmentModal = ({
         disabled={loading}
         className="w-full rounded-lg bg-violet-600 py-3 text-sm font-medium text-white transition hover:bg-violet-700 disabled:opacity-50"
       >
-        {loading ? "Publishing..." : "Publish assignment"}
+        {loading ? "Saving..." : editing ? "Save assignment" : "Publish assignment"}
       </button>
     </form>
   </Modal>

@@ -18,6 +18,7 @@ import { EditCourseModal } from "../../components/instructor/modals/EditCourseMo
 import { LessonModal } from "../../components/instructor/modals/LessonModal";
 import { AssignmentModal } from "../../components/instructor/modals/AssignmentModal";
 import { SubmissionsModal } from "../../components/instructor/modals/SubmissionsModal";
+import { useNavigate } from "react-router-dom";
 
 const PAGE_META = {
   overview: { title: "Overview", subtitle: "Track enrollment, course progress, and assignment results" },
@@ -27,6 +28,7 @@ const PAGE_META = {
 };
 
 const InstructorDashboard = () => {
+  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const analytics = useInstructorStore((state) => state.analytics);
   const analyticsLoading = useInstructorStore((state) => state.analyticsLoading);
@@ -84,20 +86,6 @@ const InstructorDashboard = () => {
     setSidebarOpen(false);
   };
 
-  const handleDeleteCourse = async (course) => {
-    const deletedId = await courseManager.handleDeleteCourse(course);
-    if (deletedId) studentsView.clearIfDeleted(deletedId);
-  };
-
-  const openStudents = (course) => {
-    goTo("students");
-    studentsView.loadStudents(course._id);
-  };
-
-  const addAssignmentFromCourseCard = (course) => {
-    assignmentManager.openAssignmentModal(course);
-  };
-
   return (
     <div className="min-h-screen bg-slate-50">
       <Sidebar
@@ -116,7 +104,7 @@ const InstructorDashboard = () => {
 
         <main className="mx-auto max-w-7xl p-4 md:p-8">
           {activeView === "overview" && (
-            <InstructorOverview analytics={analytics} loading={analyticsLoading} onRefresh={getAnalytics} onAddLesson={lessonManager.openLessonModal} />
+            <InstructorOverview analytics={analytics} loading={analyticsLoading} onRefresh={getAnalytics} onOpenCourse={(course) => navigate(`/instructor/course/${course._id}`)} />
           )}
 
           {activeView === "courses" && (
@@ -131,11 +119,6 @@ const InstructorDashboard = () => {
               loading={courseManager.loading}
               onRefresh={courseManager.getCourses}
               onCreate={courseManager.openCreateCourse}
-              onAddLesson={lessonManager.openLessonModal}
-              onAddAssignment={addAssignmentFromCourseCard}
-              onViewStudents={openStudents}
-              onEdit={courseManager.openEditCourse}
-              onDelete={handleDeleteCourse}
             />
           )}
 

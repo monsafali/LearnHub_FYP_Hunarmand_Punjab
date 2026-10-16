@@ -222,11 +222,14 @@ export const deleteCourse = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
-  // Check enrolled students
-  const enrolledStudents = await EnrollmentCourse.countDocuments({
-    course: id,
-    status: "active",
-  });
+  const assignments = await Assignment.find({ course: id });
+  for (const assignment of assignments) {
+    if (assignment.pdfPublicId) await deleteFromCloudinary(assignment.pdfPublicId);
+  }
+  const assignmentIds = assignments.map((assignment) => assignment._id);
+  await AssignmentSubmission.deleteMany({ assignment: { $in: assignmentIds } });
+  await Assignment.deleteMany({ course: id });
+  await EnrollmentCourse.deleteMany({ course: id });
 
   // Find all lessons
   const lessons = await Lesson.find({
@@ -338,6 +341,78 @@ export const getCourseLessons = catchAsyncErrors(async (req, res, next) => {
     count: lessons.length,
     lessons,
   });
+});
+
+export const getInstructorCourseContent = catchAsyncErrors(async (req, res, next) => {
+  const { courseId } = req.params;
+  const course = await Course.findById(courseId).populate("trainer", "fullname username email imageUrl bio");
+  if (!course) return next(new ErrorHandler("Course not found", 404));
+  if (course.trainer._id.toString() !== req.user._id.toString()) {
+    return next(new ErrorHandler("You are not authorized to view this course", 403));
+  }
+  const [lessons, assignments] = await Promise.all([
+    Lesson.find({ course: courseId }).sort({ order: 1, createdAt: 1 }),
+    Assignment.find({ course: courseId }).sort({ createdAt: -1 }),
+  ]);
+  res.status(200).json({ success: true, course, lessons, assignments });
+});
+
+export const updateLesson = catchAsyncErrors(async (req, res, next) => {
+  const lesson = await Lesson.findById(req.params.lessonId);
+  if (!lesson) return next(new ErrorHandler("Lesson not found", 404));
+  const course = await Course.findById(lesson.course);
+  if (course.trainer.toString() !== req.user._id.toString()) return next(new ErrorHandler("You are not authorized to update this lesson", 403));
+  if (req.body.title?.trim()) lesson.title = req.body.title.trim();
+  if (req.files?.video) {
+    const upload = await uploadToCloudinary(req.files.video, "lms/lessons");
+    if (lesson.videoPublicId) await deleteFromCloudinary(lesson.videoPublicId);
+    lesson.videoUrl = upload.secure_url;
+    lesson.videoPublicId = upload.public_id;
+  }
+  await lesson.save();
+  res.status(200).json({ success: true, lesson, message: "Lecture updated successfully" });
+});
+
+export const deleteLesson = catchAsyncErrors(async (req, res, next) => {
+  const lesson = await Lesson.findById(req.params.lessonId);
+  if (!lesson) return next(new ErrorHandler("Lesson not found", 404));
+  const course = await Course.findById(lesson.course);
+  if (course.trainer.toString() !== req.user._id.toString()) return next(new ErrorHandler("You are not authorized to delete this lesson", 403));
+  if (lesson.videoPublicId) await deleteFromCloudinary(lesson.videoPublicId);
+  await lesson.deleteOne();
+  res.status(200).json({ success: true, message: "Lecture deleted successfully" });
+});
+
+export const updateAssignment = catchAsyncErrors(async (req, res, next) => {
+  const assignment = await Assignment.findById(req.params.assignmentId);
+  if (!assignment) return next(new ErrorHandler("Assignment not found", 404));
+  const course = await Course.findById(assignment.course);
+  if (course.trainer.toString() !== req.user._id.toString()) return next(new ErrorHandler("You are not authorized to update this assignment", 403));
+  const { title, description, totalMarks, dueDate } = req.body;
+  if (title !== undefined) assignment.title = title.trim();
+  if (description !== undefined) assignment.description = description.trim();
+  if (totalMarks !== undefined) assignment.totalMarks = Number(totalMarks);
+  if (dueDate !== undefined) assignment.dueDate = dueDate || null;
+  if (req.files?.assignment) {
+    if (req.files.assignment.mimetype !== "application/pdf") return next(new ErrorHandler("Only PDF files are allowed", 400));
+    const upload = await uploadToCloudinary(req.files.assignment, "lms/assignments");
+    if (assignment.pdfPublicId) await deleteFromCloudinary(assignment.pdfPublicId);
+    assignment.pdfUrl = upload.secure_url;
+    assignment.pdfPublicId = upload.public_id;
+  }
+  await assignment.save();
+  res.status(200).json({ success: true, assignment, message: "Assignment updated successfully" });
+});
+
+export const deleteAssignment = catchAsyncErrors(async (req, res, next) => {
+  const assignment = await Assignment.findById(req.params.assignmentId);
+  if (!assignment) return next(new ErrorHandler("Assignment not found", 404));
+  const course = await Course.findById(assignment.course);
+  if (course.trainer.toString() !== req.user._id.toString()) return next(new ErrorHandler("You are not authorized to delete this assignment", 403));
+  if (assignment.pdfPublicId) await deleteFromCloudinary(assignment.pdfPublicId);
+  await AssignmentSubmission.deleteMany({ assignment: assignment._id });
+  await assignment.deleteOne();
+  res.status(200).json({ success: true, message: "Assignment deleted successfully" });
 });
 
 export const getCourseById = catchAsyncErrors(async (req, res, next) => {

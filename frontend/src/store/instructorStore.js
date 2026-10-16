@@ -170,6 +170,47 @@ const useInstructorStore = create((set) => ({
     }
   },
 
+  getInstructorCourseContent: async (courseId) => {
+    try {
+      const response = await API_BASE_URL.get(`/course/instructor/course/${courseId}/content`);
+      return { success: true, ...response.data };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Failed to load course" };
+    }
+  },
+  updateLesson: async (lessonId, formData) => {
+    try {
+      const response = await API_BASE_URL.put(`/course/instructor/lessons/${lessonId}`, formData);
+      return { success: true, lesson: response.data.lesson, message: response.data.message };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Failed to update lecture" };
+    }
+  },
+  deleteLesson: async (lessonId) => {
+    try {
+      const response = await API_BASE_URL.delete(`/course/instructor/lessons/${lessonId}`);
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Failed to delete lecture" };
+    }
+  },
+  updateAssignment: async (assignmentId, formData) => {
+    try {
+      const response = await API_BASE_URL.put(`/course/instructor/assignments/${assignmentId}`, formData);
+      return { success: true, assignment: response.data.assignment, message: response.data.message };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Failed to update assignment" };
+    }
+  },
+  deleteAssignment: async (assignmentId) => {
+    try {
+      const response = await API_BASE_URL.delete(`/course/instructor/assignments/${assignmentId}`);
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Failed to delete assignment" };
+    }
+  },
+
   // =====================================================
   // STUDENTS
   // =====================================================

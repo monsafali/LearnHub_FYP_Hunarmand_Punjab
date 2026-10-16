@@ -19,6 +19,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
 import PaymentSuccess from "./pages/student/PaymentSuccess";
 import EmbeddedCourseCheckout from "./pages/student/EmbeddedCourseCheckout";
+import InstructorCourse from "./pages/instructor/InstructorCourse";
 
 const App = () => {
   return (
@@ -41,6 +42,9 @@ const App = () => {
         </Route>
         <Route path="/instructor/dashboard" element={<ProtectedRoute allowedRoles={["Instructor"]} />}>
           <Route index element={<InstructorDashboard />} />
+        </Route>
+        <Route path="/instructor/course/:courseId" element={<ProtectedRoute allowedRoles={["Instructor"]} />}>
+          <Route index element={<InstructorCourse />} />
         </Route>
         <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["Admin"]} />}>
           <Route index element={<AdminDashboard />} />

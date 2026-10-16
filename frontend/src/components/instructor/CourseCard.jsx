@@ -1,4 +1,3 @@
-import Icon from "../ui/Icon";
 import { CourseThumb } from "./CourseThumb";
 import {
   BADGE_STYLES,
@@ -8,13 +7,8 @@ import {
 
 export const CourseCard = ({
   course,
-  onAddLesson,
-  onAddAssignment,
-  onViewStudents,
-  onEdit,
-  onDelete,
 }) => (
-  <article className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 transition hover:shadow-md">
+  <article role="link" tabIndex={0} onClick={() => window.location.assign(`/instructor/course/${course._id}`)} onKeyDown={(event) => event.key === "Enter" && window.location.assign(`/instructor/course/${course._id}`)} className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 transition hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
     <div className="relative">
       <CourseThumb course={course} className="h-44 w-full" />
       <span
@@ -40,47 +34,7 @@ export const CourseCard = ({
         {course.description}
       </p>
 
-      <div className="mt-5 grid grid-cols-2 gap-2">
-        <button
-          onClick={() => onAddLesson(course)}
-          className="flex items-center justify-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
-        >
-          <Icon name="video" className="h-4 w-4" />
-          Add lesson
-        </button>
-
-        <button
-          onClick={() => onAddAssignment(course)}
-          className="flex items-center justify-center gap-1.5 rounded-lg bg-violet-50 px-3 py-2 text-sm font-medium text-violet-700 transition hover:bg-violet-100"
-        >
-          <Icon name="clipboard" className="h-4 w-4" />
-          Assignment
-        </button>
-
-        <button
-          onClick={() => onViewStudents(course)}
-          className="flex items-center justify-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100"
-        >
-          <Icon name="users" className="h-4 w-4" />
-          Students
-        </button>
-
-        <button
-          onClick={() => onEdit(course)}
-          className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
-        >
-          <Icon name="pencil" className="h-4 w-4" />
-          Edit
-        </button>
-
-        <button
-          onClick={() => onDelete(course)}
-          className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-rose-600 transition hover:border-rose-200 hover:bg-rose-50"
-        >
-          <Icon name="trash" className="h-4 w-4" />
-          Delete
-        </button>
-      </div>
+      <p className="mt-5 rounded-lg bg-indigo-50 px-3 py-2 text-center text-sm font-medium text-indigo-700">Open course and manage content →</p>
     </div>
   </article>
 );
