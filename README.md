@@ -191,8 +191,6 @@ SUPER_ADMIN_USERNAME=admin
 SUPER_ADMIN_EMAIL=your_admin_email
 SUPER_ADMIN_PASSWORD=your_secure_admin_password
 
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-4o-mini
 
 NODE_ENV=development
 ```
